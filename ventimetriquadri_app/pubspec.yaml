@@ -1,0 +1,55 @@
+name: ventimetriquadri
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  supercharged: ^2.1.1
+  chopper:
+  provider:
+  cupertino_icons: ^1.0.2
+  json_annotation: ^4.4.0
+  flutter_cupertino_datetime_picker: ^3.0.0
+  cool_stepper:
+  intl:
+  syncfusion_flutter_pdfviewer:
+  pdf_render:
+  flutter_svg: ^1.1.6
+  url_strategy:
+  device_preview: ^1.1.0
+  url_launcher: ^6.1.6
+  font_awesome_flutter:
+  carousel_slider: ^4.1.1
+  simple_animations: ^4.0.2
+  modal_side_sheet: ^0.0.1
+
+dev_dependencies:
+  build_runner: ^2.1.7
+  chopper_generator: ^5.1.0+1
+  json_serializable: ^6.1.4
+  swagger_dart_code_generator: ^2.4.6
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - images/
+    - images/staff/
+    - images/photos/
+    - assets/
+
+  fonts:
+    - family: Dance
+      fonts:
+        - asset: fonts/Rajdhani-Light.ttf

@@ -1,0 +1,5 @@
+enum Branch{
+  CISTERNINO,
+  LOCOROTONDO,
+  MONOPOLI
+}
