@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../databundle/Branch.dart';
+import '../../databundle/branch.dart';
 import '../../databundle/data_bundle_notifier.dart';
 import '../../menu/pdf_viewer.dart';
 
@@ -64,9 +64,9 @@ class _MenuScreenState extends State<MenuScreen> {
                   const SizedBox(height: 105),
                   Column(
                     children: [
-                      buildButton('MENU\' CISTERNINO', bundleNotifier, Branch.CISTERNINO),
-                      buildButton('MENU\' LOCOROTONDO', bundleNotifier, Branch.LOCOROTONDO),
-                      buildButton('MENU\' MONOPOLI', bundleNotifier, Branch.MONOPOLI),
+                      buildButton('MENU\' CISTERNINO', bundleNotifier, Branch20m2.CISTERNINO),
+                      buildButton('MENU\' LOCOROTONDO', bundleNotifier, Branch20m2.LOCOROTONDO),
+                      buildButton('MENU\' MONOPOLI', bundleNotifier, Branch20m2.MONOPOLI),
 
                     ],
                   ),
@@ -80,7 +80,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   buildButton(String s, DataBundleNotifier bundleNotifier,
-      Branch branch) {
+      Branch20m2 branch) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: SizedBox(

@@ -1,8 +1,12 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_holo_date_picker/date_picker_theme.dart';
+import 'package:flutter_holo_date_picker/i18n/date_picker_i18n.dart';
+import 'package:flutter_holo_date_picker/widget/date_picker_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:ventimetriquadri/databundle/data_bundle_notifier.dart';
+import 'package:ventimetriquadri/output/swagger.swagger.dart';
 import 'package:ventimetriquadri/screens/pages/menu_screen.dart';
 
 
@@ -88,15 +92,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         textCapitalization: TextCapitalization.words,
                         keyboardType: TextInputType.number,
                         onChanged: (phoneNumber) async {
-                          if(phoneNumber.length == 10){
-                            Response apiV1UserFindallGet = await dataBundleNotifier.getSwaggerClient().apiV1UserFindbyphoneGet(phone: dataBundleNotifier.phoneController.text);
+                          if(phoneNumber.length >= 10){
+                            Response apiV1UserFindallGet = await dataBundleNotifier
+                                .getSwaggerClient().apiV1WebsiteCustomersFindbyphoneGet(phone: dataBundleNotifier.phoneController.text);
                             if(apiV1UserFindallGet.isSuccessful){
                               if(apiV1UserFindallGet.body != null){
                                 dataBundleNotifier.setCurrentUser(apiV1UserFindallGet.body);
+                                dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersUpdatePut(
+                                  customerId: dataBundleNotifier.currentUser.customerId!.toInt(),
+                                  phoneNumber: dataBundleNotifier.currentUser.phoneNumber,
+                                  name: dataBundleNotifier.currentUser.name,
+                                  dob: dataBundleNotifier.dob,
+                                  email: dataBundleNotifier.currentUser.email,
+                                  lastname: dataBundleNotifier.currentUser.lastname,
+                                  treatmentPersonalData: dataBundleNotifier.currentUser.treatmentPersonalData,
+                                  accessCounter: dataBundleNotifier.currentUser!.accessCounter! + 1,
+                                );
                                 FocusManager.instance.primaryFocus?.unfocus();
                               }
-                            }else{
-                              print('minchione');
                             }
                           }
                         },
@@ -118,7 +131,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                       const SizedBox(height: 9,),
                       TextFormField(
-                        autofillHints: const [AutofillHints.givenName],
+                        autofillHints: const [AutofillHints.name],
                         style: TextStyle(
                             color: Colors.grey.shade700,
                             fontFamily: 'Dance',
@@ -219,19 +232,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15.0) //                 <--- border radius here
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(15.0)
                             ),
                           ),
-                          child: SizedBox(
-                            height: 100,
-                            child: CupertinoDatePicker(
-                              dateOrder: DatePickerDateOrder.dmy,
-                                initialDateTime: DateTime(1990),
-                                mode: CupertinoDatePickerMode.date,
-                                onDateTimeChanged: (da){
-
-                            }),
+                          child: DatePickerWidget(
+                            looping: false,
+                            firstDate: DateTime(1940),
+                            lastDate: DateTime(2018),
+                            locale: DateTimePickerLocale.it,
+                            dateFormat:
+                            "dd/MMMM/yyyy",
+                            // locale: DatePicker.localeFromString('th'),
+                            onChange: (DateTime newDate, _) {
+                              dataBundleNotifier.setDbo(newDate);
+                            },
+                            pickerTheme: DateTimePickerTheme(
+                              backgroundColor: Colors.transparent,
+                              itemTextStyle:
+                              const TextStyle(color: Colors.black, fontFamily: 'Dance', fontWeight: FontWeight.bold, fontSize: 19),
+                              dividerColor: Colors.grey.shade700,
+                            ),
                           ),
                         ),
                       ),
@@ -282,16 +303,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           }else if(dataBundleNotifier.nameController.text.isEmpty){
                             dataBundleNotifier.setErrorFlag('true');
                             dataBundleNotifier.setErrorMessage('Inserisci il nome');
-                          }else{
+                          }else if(dataBundleNotifier.lastnameController.text.isEmpty){
+                            dataBundleNotifier.setErrorFlag('true');
+                            dataBundleNotifier.setErrorMessage('Inserisci il cognome');
+                          }else if(dataBundleNotifier.dob == ''){
+                            dataBundleNotifier.setErrorFlag('true');
+                            dataBundleNotifier.setErrorMessage('Inserisci la data di nascita');
+                          }
+                          else{
                             try{
-                              dataBundleNotifier.getSwaggerClient().apiV1UserSavePost(
+                              dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersSavePost(
                                   name: dataBundleNotifier.nameController.text,
-                                  dob: '',
+                                  dob: dataBundleNotifier.dob,
                                   email: dataBundleNotifier.emailController.text,
                                   lastname: dataBundleNotifier.lastnameController.text,
                                   phoneNumber: dataBundleNotifier.phoneController.text,
                                   treatmentPersonalData: dataBundleNotifier.checkedValue,
-                                  userId: 0
+                                  customerId: 0,
+                                  accessCounter: 1,
+                                  branch20m2: customersBranch20m2ToJson(CustomersBranch20m2.cisternino),
                               );
                             }catch(e){
                               print(e.toString());

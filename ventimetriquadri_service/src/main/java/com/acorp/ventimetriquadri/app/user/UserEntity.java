@@ -1,13 +1,10 @@
 package com.acorp.ventimetriquadri.app.user;
 
-import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Entity(name = "User_Entity")
 @Table(name = "USER_ENTITY",

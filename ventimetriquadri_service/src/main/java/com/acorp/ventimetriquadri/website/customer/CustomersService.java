@@ -45,8 +45,11 @@ public class CustomersService {
             if(updatingCustomer.get().getEmail() != customers.getEmail())
                 updatingCustomer.get().setEmail(customers.getEmail());
 
-            if(updatingCustomer.get().getPhoneNumber() != customers.getPhoneNumber())
-                updatingCustomer.get().setPhoneNumber(customers.getPhoneNumber());
+            if(updatingCustomer.get().getAccessCounter() != customers.getAccessCounter())
+                updatingCustomer.get().setAccessCounter(customers.getAccessCounter());
+
+            if(updatingCustomer.get().getLastname() != customers.getLastname())
+                updatingCustomer.get().setLastname(customers.getLastname());
 
         }
     }

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../output/swagger.swagger.dart';
-import 'Branch.dart';
+import 'branch.dart';
 
 class DataBundleNotifier extends ChangeNotifier{
 
@@ -25,11 +25,11 @@ class DataBundleNotifier extends ChangeNotifier{
   TextEditingController phoneController = TextEditingController();
   String dob = '';
 
-  Branch currentBranch = Branch.CISTERNINO;
+  Branch20m2 currentBranch = Branch20m2.CISTERNINO;
 
   DateFormat dateFormat = DateFormat("dd-MM-yyyy");
 
-  late User20m2 currentUser;
+  late Customers currentUser;
 
   DateTime currentDate = DateTime(1990, 05, 19, 0,0,0,0,0);
 
@@ -51,18 +51,18 @@ class DataBundleNotifier extends ChangeNotifier{
     notifyListeners();
   }
 
-  void setCurrentBranch(Branch branch){
+  void setCurrentBranch(Branch20m2 branch){
     currentBranch = branch;
     switch(branch){
-      case Branch.CISTERNINO:
+      case Branch20m2.CISTERNINO:
         currentPdfIta = pdfItaCisternino;
         currentPdfEng = pdfEnCisternino;
         break;
-      case Branch.LOCOROTONDO:
+      case Branch20m2.LOCOROTONDO:
         currentPdfIta = pdfItaLocorotondo;
         currentPdfEng = pdfEngLocorotondo;
         break;
-      case Branch.MONOPOLI:
+      case Branch20m2.MONOPOLI:
         currentPdfIta = pdfItaMonopoli;
         currentPdfEng = pdfEngMonopoli;
         break;
@@ -79,7 +79,7 @@ class DataBundleNotifier extends ChangeNotifier{
     notifyListeners();
   }
 
-  void setCurrentUser(User20m2 user){
+  void setCurrentUser(Customers user){
     currentUser = user;
     alreadyRegisteredUser = true;
     emailController.text = currentUser.email!;
@@ -88,6 +88,7 @@ class DataBundleNotifier extends ChangeNotifier{
 
     try{
       currentDate = dateFormat.parse(currentUser.dob!);
+      dob = dateFormat.format(currentDate);
     }catch(e){
       print('date invalid');
     }
@@ -121,6 +122,12 @@ class DataBundleNotifier extends ChangeNotifier{
 
   void setErrorMessage(String s) {
     errorFormMessage = s;
+    notifyListeners();
+  }
+
+
+  void setDbo(DateTime newDate) {
+    dob = dateFormat.format(newDate);
     notifyListeners();
   }
 }
