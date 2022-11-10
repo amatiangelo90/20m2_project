@@ -80,58 +80,72 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                         ),
                       ) : const Text(''),
-                      TextFormField(
-                        autofillHints: const [AutofillHints.telephoneNumber],
-                        style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontFamily: 'Dance',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        keyboardType: TextInputType.number,
-                        onChanged: (phoneNumber) async {
-                          if(phoneNumber.length >= 10){
-                            Response apiV1UserFindallGet = await dataBundleNotifier
-                                .getSwaggerClient().apiV1WebsiteCustomersFindbyphoneGet(phone: dataBundleNotifier.phoneController.text);
-                            if(apiV1UserFindallGet.isSuccessful){
-                              if(apiV1UserFindallGet.body != null){
-                                dataBundleNotifier.setCurrentUser(apiV1UserFindallGet.body);
-                                dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersUpdatePut(
-                                  customerId: dataBundleNotifier.currentUser.customerId!.toInt(),
-                                  phoneNumber: dataBundleNotifier.currentUser.phoneNumber,
-                                  name: dataBundleNotifier.currentUser.name,
-                                  dob: dataBundleNotifier.dob,
-                                  email: dataBundleNotifier.currentUser.email,
-                                  lastname: dataBundleNotifier.currentUser.lastname,
-                                  treatmentPersonalData: dataBundleNotifier.currentUser.treatmentPersonalData,
-                                  accessCounter: dataBundleNotifier.currentUser!.accessCounter! + 1,
-                                );
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              }
-                            }
-                          }
-                        },
-                        decoration: const InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xfffdfdff),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.3),
+                      Row(
+                        children: [
+                          Text(
+                            ' +39  ' , style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontFamily: 'Dance',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 19
+                          ),
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              autofillHints: const [AutofillHints.telephoneNumber],
+                              style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Dance',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              textInputAction: TextInputAction.next,
+                              textCapitalization: TextCapitalization.words,
+                              keyboardType: TextInputType.number,
+                              onChanged: (phoneNumber) async {
+                                if(phoneNumber.length >= 10){
+                                  Response apiV1UserFindallGet = await dataBundleNotifier
+                                      .getSwaggerClient().apiV1WebsiteCustomersFindbyphoneGet(phone: dataBundleNotifier.phoneController.text);
+                                  if(apiV1UserFindallGet.isSuccessful){
+                                    if(apiV1UserFindallGet.body != null){
+                                      dataBundleNotifier.setCurrentUser(apiV1UserFindallGet.body);
+                                      dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersUpdatePut(
+                                        customerId: dataBundleNotifier.currentUser.customerId!.toInt(),
+                                        phoneNumber: dataBundleNotifier.currentUser.phoneNumber,
+                                        name: dataBundleNotifier.currentUser.name,
+                                        dob: dataBundleNotifier.dob,
+                                        email: dataBundleNotifier.currentUser.email,
+                                        lastname: dataBundleNotifier.currentUser.lastname,
+                                        treatmentPersonalData: dataBundleNotifier.currentUser.treatmentPersonalData,
+                                        accessCounter: dataBundleNotifier.currentUser!.accessCounter! + 1,
+                                      );
+                                      FocusManager.instance.primaryFocus?.unfocus();
+                                    }
+                                  }
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                  filled: true,
+                                  fillColor: Color(0xfffdfdff),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                    borderSide: BorderSide(color: Colors.grey, width: 1.3),
+                                  ),
+                                  labelText: 'cellulare *',
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                                  ),
+                                  focusColor: Colors.grey,
+                                  border: OutlineInputBorder()),
+                              controller: dataBundleNotifier.phoneController,
                             ),
-                            labelText: 'cellulare *',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                            ),
-                            focusColor: Colors.grey,
-                            border: OutlineInputBorder()),
-                        controller: dataBundleNotifier.phoneController,
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 9,),
                       TextFormField(
-                        autofillHints: const [AutofillHints.name],
+                        autofillHints: const [AutofillHints.givenName],
                         style: TextStyle(
                             color: Colors.grey.shade700,
                             fontFamily: 'Dance',

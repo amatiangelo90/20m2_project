@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:ventimetriquadri/screens/pages/home.dart';
+import 'package:ventimetriquadri/screens/pages/interactive_menu.dart';
 import 'package:ventimetriquadri/screens/pages/registration_page.dart';
 import 'package:ventimetriquadri/screens/pages/menu_screen.dart';
 
