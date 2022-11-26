@@ -55,6 +55,6 @@ public class Supplier {
     private long branchId;
 
     @Transient
-    ArrayList<Product> productList;
+    List<Product> productList;
 
 }

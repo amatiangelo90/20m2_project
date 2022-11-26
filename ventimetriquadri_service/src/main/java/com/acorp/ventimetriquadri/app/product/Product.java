@@ -2,6 +2,7 @@ package com.acorp.ventimetriquadri.app.product;
 
 import com.acorp.ventimetriquadri.app.product.product_utils.UnitMeasure;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Entity(name = "Product")
 @Table(name = "PRODUCT",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"product_id", "name"}))
+        @UniqueConstraint(columnNames={"product_id", "name", "supplierId"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -41,4 +42,9 @@ public class Product {
     private double price = 0;
     private String description = "";
     private String category = "";
+    @JsonIgnore
+    private long supplierId;
+
+    @Transient
+    private double orderAmount;
 }

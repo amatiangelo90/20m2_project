@@ -2,6 +2,12 @@ package com.acorp.ventimetriquadri.app.product;
 
 import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.product.ProductRepository;
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProduct;
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchRepository;
+import com.acorp.ventimetriquadri.app.supplier.Supplier;
+import com.acorp.ventimetriquadri.app.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +22,19 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private SupplierProductRepository supplierProductRepository;
+
+
     @Transactional
     public void addNewProduct(Product product) {
-        productRepository.save(product);
+
+        Product prodSaved = productRepository.save(product);
+        supplierProductRepository.save(
+                SupplierProduct.builder()
+                        .product(prodSaved)
+                        .supplier(Supplier.builder().supplierId(product.getSupplierId()).build())
+                        .build());
     }
 
     public void delete(Product product){

@@ -2,6 +2,7 @@ package com.acorp.ventimetriquadri.app.relations.branch_supplier;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.product.ProductService;
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductService;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,14 @@ public class BranchSupplierService {
     private BranchSupplierRepository branchSupplierRepository;
 
     @Autowired
-    private ProductService productService;
+    private SupplierProductService supplierProductService;
 
 
     public List<Supplier> findAllSupplierByBranch(Branch branch){
         List<Supplier> allSupplierByBranch = branchSupplierRepository.findAllSupplierByBranch(branch);
 
         for(Supplier supplier : allSupplierByBranch){
-            supplier.setProductList(productService.findAllBySupplierId(supplier.getSupplierId()));
+            supplier.setProductList(supplierProductService.findAllBySupplierId(supplier.getSupplierId()));
         }
 
         return allSupplierByBranch;
