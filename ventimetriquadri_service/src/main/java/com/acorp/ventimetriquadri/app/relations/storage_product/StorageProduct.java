@@ -31,7 +31,6 @@ public class StorageProduct {
     )
     private long storageProductId;
 
-    private String utenza = "";
     private String creationDate = "";
     private String editDate = "";
     private String stock = "";

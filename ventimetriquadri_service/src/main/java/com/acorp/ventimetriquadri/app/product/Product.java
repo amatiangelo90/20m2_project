@@ -41,8 +41,4 @@ public class Product {
     private double price = 0;
     private String description = "";
     private String category = "";
-
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="supplier_id")
-    private Supplier supplier;
 }

@@ -1,11 +1,13 @@
 package com.acorp.ventimetriquadri.app.event;
 
+import com.acorp.ventimetriquadri.app.event.event_expences.EventExpence;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "Event")
 @Table(name = "EVENT",
@@ -41,6 +43,9 @@ public class Event {
     private EventStatus eventStatus;
 
     private String location = "";
+
+    @Transient
+    private List<EventExpence> eventExpences;
 
 
 }

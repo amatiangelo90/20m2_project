@@ -1,6 +1,7 @@
 package com.acorp.ventimetriquadri.app.event;
 
 
+import com.acorp.ventimetriquadri.app.event.event_expences.EventExpenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,10 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private EventExpenceRepository eventExpenceRepository;
+
+
     @Transactional
     public void addNewEvent(Event event) {
         eventRepository.save(event);
@@ -24,7 +29,15 @@ public class EventService {
     }
 
     public List<Event> findAll() {
-        return eventRepository.findAll();
+
+
+        List<Event> allEvents = eventRepository.findAll();
+
+        for(Event event : allEvents){
+            event.setEventExpences(eventExpenceRepository.findAllByEventId(event.getEventId()));
+        }
+
+        return allEvents;
     }
 
     @Transactional

@@ -47,7 +47,7 @@ public class UserService {
         }
     }
 
-//    public UserEntity findByPhone(String phone) {
-//        return userRepository.findByPhone(phone);
-//    }
+    public UserEntity findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

@@ -1,4 +1,4 @@
-package com.acorp.ventimetriquadri.website.customer;
+package com.acorp.ventimetriquadri.website.entity;
 
 public enum BranchLocation {
     CISTERNINO,

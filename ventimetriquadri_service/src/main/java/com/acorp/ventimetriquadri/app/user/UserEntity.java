@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
-@Entity(name = "User_Entity")
+@Entity(name = "UserEntity")
 @Table(name = "USER_ENTITY",
         uniqueConstraints=
         @UniqueConstraint(columnNames={"user_id", "email"}))
@@ -34,6 +34,12 @@ public class UserEntity {
 
     private String name = "";
     private String lastname = "";
+
+    @Column(
+            name = "email",
+            unique = true,
+            nullable = false
+    )
     private String email = "";
     @Column(
             name = "phone",

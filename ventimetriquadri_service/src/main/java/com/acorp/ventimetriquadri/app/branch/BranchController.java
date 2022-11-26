@@ -23,9 +23,9 @@ public class BranchController {
         return branchService.findAll();
     }
 
-    @GetMapping(path = "/findbyphone")
-    public Branch retrieveByPhone(@RequestParam("phone") String phone){
-        return branchService.findByPhone(phone);
+    @GetMapping(path = "/findByUserId")
+    public List<Branch> retrieveByUserId(@RequestParam("userId") long userId){
+        return branchService.findByUserId(userId);
     }
 
     @PostMapping(path = "/save")

@@ -1,9 +1,12 @@
 package com.acorp.ventimetriquadri.app.branch;
 
-import com.acorp.ventimetriquadri.app.branch.Branch;
-import com.acorp.ventimetriquadri.app.branch.BranchRepository;
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchRepository;
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchService;
+import com.acorp.ventimetriquadri.app.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +17,20 @@ public class BranchService {
     @Autowired
     private BranchRepository branchRepository;
 
+    @Autowired
+    private UserBranchRepository userBranchRepository;
+
+    @Autowired
+    private UserBranchService userBranchService;
+
     @Transactional
     public void addNewBranch(Branch branch) {
-        branchRepository.save(branch);
+
+        Branch branchSaved = branchRepository.save(branch);
+        userBranchRepository.save(
+                UserBranch.builder()
+                        .userEntity(UserEntity.builder().userId(branch.getUserId()).build())
+                        .branch(branchSaved).build());
     }
 
     public void delete(Branch branch){
@@ -60,7 +74,7 @@ public class BranchService {
         }
     }
 
-    public Branch findByPhone(String phone) {
-        return branchRepository.findByPhone(phone);
+    public List<Branch> findByUserId(long userId) {
+        return userBranchService.retrieveAllBranchesByUserId(userId);
     }
 }

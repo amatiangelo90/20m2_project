@@ -24,10 +24,10 @@ public class UsersController {
         return userService.findAll();
     }
 
-//    @GetMapping(path = "/findbyphone")
-//    public UserEntity retrieveByPhone(@RequestParam("phone") String phone){
-//        return userService.findByPhone(phone);
-//    }
+    @GetMapping(path = "/findbyemail")
+    public UserEntity retrieveAll(@RequestParam String email){
+        return userService.findByEmail(email);
+    }
 
     @PostMapping(path = "/save")
     public void save(UserEntity userEntity) { userService.addNewBranch(userEntity); }

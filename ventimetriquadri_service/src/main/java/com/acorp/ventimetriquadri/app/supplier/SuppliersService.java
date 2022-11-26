@@ -1,5 +1,9 @@
 package com.acorp.ventimetriquadri.app.supplier;
 
+import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplier;
+import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierRepository;
+import com.acorp.ventimetriquadri.exception.VentiMetriQuadriCustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +18,28 @@ public class SuppliersService {
     @Autowired
     private SupplierRepository supplierRepository;
 
+    @Autowired
+    private BranchSupplierRepository branchSupplierRepository;
+
     @Transactional
-    public void addNewBranch(Supplier user) {
-        supplierRepository.save(user);
+    public void addNewBranch(Supplier supplier) {
+
+        try{
+            Supplier supplierdSaved = supplierRepository.save(supplier);
+            branchSupplierRepository.save(
+                    BranchSupplier.builder()
+                            .branch(Branch.builder().branchId(supplier.getBranchId()).build())
+                            .supplier(supplierdSaved)
+                            .build()
+            );
+        }catch(Exception e){
+            throw new IllegalStateException(e);
+        }
+
     }
 
-    public void delete(Supplier user){
-        supplierRepository.deleteById(user.getSupplierId());
+    public void delete(Supplier supplier){
+        supplierRepository.deleteById(supplier.getSupplierId());
     }
 
     public List<Supplier> findAll() {

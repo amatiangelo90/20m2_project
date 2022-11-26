@@ -1,21 +1,22 @@
-package com.acorp.ventimetriquadri.website.customer;
+package com.acorp.ventimetriquadri.website.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
-@Entity(name = "Customers")
-@Table(name = "CUSTOMERS",
+@Entity(name = "Customer")
+@Table(name = "CUSTOMER",
         uniqueConstraints=
         @UniqueConstraint(columnNames={"customer_id", "email"}))
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
-public class Customers {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer implements Serializable {
+
 
     @Id
     @SequenceGenerator(
@@ -41,9 +42,11 @@ public class Customers {
             unique = true,
             nullable = false
     )
-    private String phoneNumber;
+    private String phone;
     private String dob;
     private boolean treatmentPersonalData;
-    private BranchLocation branch20m2;
-    private int accessCounter;
+
+    @Transient
+    private List<CustomerAccess> accessesList;
+
 }

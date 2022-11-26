@@ -1,12 +1,15 @@
 package com.acorp.ventimetriquadri.app.supplier;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "Supplier")
@@ -47,5 +50,11 @@ public class Supplier {
     private String phoneNumber;
     private String email;
     private String pec;
+
+    @Transient
+    private long branchId;
+
+    @Transient
+    ArrayList<Product> productList;
 
 }

@@ -1,6 +1,6 @@
 package com.acorp.ventimetriquadri.app.event.event_expences;
 
-import com.acorp.ventimetriquadri.app.event.Event;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,10 +37,11 @@ public class EventExpence {
     private double amount;
     private String dateIntert;
 
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="event_id")
-    private Event event;
-
-
+    @Column(
+            name = "event_id",
+            updatable = false
+    )
+    @JsonIgnore
+    private long eventId;
 
 }

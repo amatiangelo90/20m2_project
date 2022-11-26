@@ -1,42 +1,40 @@
-package com.acorp.ventimetriquadri.app.relations.branch_supplier;
+package com.acorp.ventimetriquadri.app.relations.supplier_product;
 
-import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.product.Product;
+import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "BranchSupplier")
-@Table(name = "BRANCH_SUPPLIER")
+@Entity(name = "SupplierProduct")
+@Table(name = "SUPPLIER_PRODUCT")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
-public class BranchSupplier {
+public class SupplierProduct {
 
     @Id
     @SequenceGenerator(
-            name = "branch_supplier_id",
-            sequenceName = "branch_supplier_id",
+            name = "supplier_product_id",
+            sequenceName = "supplier_product_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "branch_supplier_id"
+            generator = "supplier_product_id"
     )
     @Column(
-            name = "branch_supplier_id",
+            name = "supplier_product_id",
             updatable = false
     )
-    private long branchSupplierId;
-
+    private long supplierProductId;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="branch_id")
-    private Branch branch;
+    @JoinColumn(name="product_id")
+    private Product product;
 
 
     @ManyToOne(fetch=FetchType.LAZY)
