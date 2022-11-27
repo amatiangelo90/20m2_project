@@ -22,7 +22,7 @@ public class SuppliersService {
     private BranchSupplierRepository branchSupplierRepository;
 
     @Transactional
-    public void addNewBranch(Supplier supplier) {
+    public Supplier saveSupplier(Supplier supplier) {
 
         try{
             Supplier supplierdSaved = supplierRepository.save(supplier);
@@ -32,6 +32,7 @@ public class SuppliersService {
                             .supplier(supplierdSaved)
                             .build()
             );
+            return supplierdSaved;
         }catch(Exception e){
             throw new IllegalStateException(e);
         }

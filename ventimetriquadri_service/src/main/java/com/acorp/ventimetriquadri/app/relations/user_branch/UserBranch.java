@@ -43,4 +43,6 @@ public class UserBranch {
     @JoinColumn(name="user_id")
     private UserEntity userEntity;
 
+    private String token;
+
 }

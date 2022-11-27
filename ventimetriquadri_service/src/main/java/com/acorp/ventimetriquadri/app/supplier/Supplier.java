@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 @Builder
-public class Supplier {
+public class Supplier implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -37,6 +38,10 @@ public class Supplier {
             updatable = false
     )
     private long supplierId;
+    @Column(
+            name = "name",
+            nullable = false
+    )
     private String name = "";
     private String vatNumber = "";
     private String address;

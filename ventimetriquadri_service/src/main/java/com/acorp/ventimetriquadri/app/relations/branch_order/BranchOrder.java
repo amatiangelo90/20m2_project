@@ -1,42 +1,42 @@
-package com.acorp.ventimetriquadri.app.relations.branch_storage;
+package com.acorp.ventimetriquadri.app.relations.branch_order;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
-import com.acorp.ventimetriquadri.app.storage.Storage;
+import com.acorp.ventimetriquadri.app.order.Order;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
-@Entity(name = "BranchStorage")
-@Table(name = "BRANCH_STORAGE")
+@Entity(name = "BranchOrder")
+@Table(name = "BRANCH_ORDER")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
-public class BranchStorage {
+public class BranchOrder implements Serializable {
     @Id
     @SequenceGenerator(
-            name = "branch_storage_id",
-            sequenceName = "branch_storage_id",
+            name = "branch_order_id",
+            sequenceName = "branch_order_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "branch_storage_id"
+            generator = "branch_order_id"
     )
     @Column(
-            name = "branch_storage_id",
+            name = "branch_order_id",
             updatable = false
     )
-    private long branchStorageId;
+    private long branchOrderId;
 
     @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="branch_id")
     private Branch branch;
 
     @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="storage_id")
-    private Storage storage;
+    @JoinColumn(name="order_id")
+    private Order order;
+
 }

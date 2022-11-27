@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Order")
 @Table(name = "ORDER",
@@ -35,7 +36,7 @@ public class Order implements Serializable {
             name = "order_id",
             updatable = false
     )
-    private long productId;
+    private long orderId;
 
     private String closedBy;
     private String creationDate;
@@ -48,4 +49,17 @@ public class Order implements Serializable {
     @Transient
     List<Product> productList;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order)) return false;
+        Order order = (Order) o;
+        return orderId == order.orderId;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(orderId);
+    }
 }

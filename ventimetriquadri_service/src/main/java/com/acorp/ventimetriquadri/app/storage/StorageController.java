@@ -23,7 +23,7 @@ public class StorageController {
     }
 
     @PostMapping(path = "/save")
-    public void save(Storage storage) { storageService.saveStorage(storage); }
+    public Storage save(Storage storage) { return storageService.saveStorage(storage); }
 
     @DeleteMapping(path = "/delete")
     public void delete(Storage storage){

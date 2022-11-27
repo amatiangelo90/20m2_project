@@ -1,7 +1,6 @@
 package com.acorp.ventimetriquadri.app.relations.branch_supplier;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
-import com.acorp.ventimetriquadri.app.product.ProductService;
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductService;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;

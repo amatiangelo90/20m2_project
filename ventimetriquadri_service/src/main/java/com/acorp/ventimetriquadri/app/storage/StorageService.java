@@ -1,5 +1,8 @@
 package com.acorp.ventimetriquadri.app.storage;
 
+import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorage;
+import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +16,17 @@ public class StorageService {
     @Autowired
     private StorageRepository storageRepository;
 
+    @Autowired
+    private BranchStorageRepository branchStorageRepository;
+
     @Transactional
-    public void saveStorage(Storage storage) {
-        storageRepository.save(storage);
+    public Storage saveStorage(Storage storage) {
+
+        Storage storageSaved = storageRepository.save(storage);
+        branchStorageRepository.save(BranchStorage.builder()
+                .storage(storageSaved)
+                .branch(Branch.builder().branchId(storage.getBranchId()).build()).build());
+        return storageSaved;
     }
 
     public void delete(Storage userEntity){

@@ -3,6 +3,7 @@ package com.acorp.ventimetriquadri.app.relations.user_branch;
 import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageService;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierService;
+import com.acorp.ventimetriquadri.app.relations.order_product.OrderProductService;
 import com.acorp.ventimetriquadri.app.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class UserBranchService {
     @Autowired
     private BranchSupplierService branchSupplierService;
 
+    @Autowired
+    private OrderProductService orderProductService;
+
     public List<Branch> retrieveAllBranchesByUserId(long userId){
 
         List<Branch> branches = userBranchRepository.retrieveBranchesByUserId(UserEntity.builder().userId(userId).build());
@@ -28,6 +32,7 @@ public class UserBranchService {
         for(Branch branch : branches){
            branch.setStorageList(branchStorageService.findAllStorageByBranch(branch));
            branch.setSupplierList(branchSupplierService.findAllSupplierByBranch(branch));
+           branch.setOrderList(orderProductService.findAllOrderByBranch(branch));
         }
         return branches;
     }

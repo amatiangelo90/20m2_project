@@ -30,7 +30,9 @@ public class BranchService {
         userBranchRepository.save(
                 UserBranch.builder()
                         .userEntity(UserEntity.builder().userId(branch.getUserId()).build())
-                        .branch(branchSaved).build());
+                        .branch(branchSaved)
+                        .token(branch.getToken())
+                        .build());
     }
 
     public void delete(Branch branch){

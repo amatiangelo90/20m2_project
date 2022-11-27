@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.app.branch;
 
+import com.acorp.ventimetriquadri.app.order.Order;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Builder
-public class Branch {
+public class Branch implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -53,10 +55,16 @@ public class Branch {
     private long userId;
 
     @Transient
-    List<Storage> storageList;
+    private List<Storage> storageList;
 
     @Transient
-    List<Supplier> supplierList;
+    private List<Supplier> supplierList;
+
+    @Transient
+    private List<Order> orderList;
+
+    @Transient
+    private String token;
 
     @Override
     public boolean equals(Object o) {

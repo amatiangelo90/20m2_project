@@ -37,4 +37,7 @@ public class Storage {
     private String address= "";
     private String city = "";
     private int cap;
+
+    @Transient
+    private long branchId;
 }

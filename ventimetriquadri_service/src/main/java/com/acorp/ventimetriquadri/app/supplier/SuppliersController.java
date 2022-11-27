@@ -30,7 +30,7 @@ public class SuppliersController {
     }
 
     @PostMapping(path = "/save")
-    public void save(Supplier supplier) { suppliersService.addNewBranch(supplier); }
+    public Supplier save(Supplier supplier) { return suppliersService.saveSupplier(supplier); }
 
     @DeleteMapping(path = "/delete")
     public void delete(Supplier supplier){
