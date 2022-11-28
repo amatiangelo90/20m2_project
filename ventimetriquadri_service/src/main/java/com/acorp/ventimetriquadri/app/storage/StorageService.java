@@ -23,9 +23,11 @@ public class StorageService {
     public Storage saveStorage(Storage storage) {
 
         Storage storageSaved = storageRepository.save(storage);
+
         branchStorageRepository.save(BranchStorage.builder()
                 .storage(storageSaved)
                 .branch(Branch.builder().branchId(storage.getBranchId()).build()).build());
+
         return storageSaved;
     }
 

@@ -31,11 +31,11 @@ public class BranchOrder implements Serializable {
     )
     private long branchOrderId;
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="branch_id")
     private Branch branch;
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="order_id")
     private Order order;
 

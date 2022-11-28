@@ -32,11 +32,11 @@ public class BranchStorage {
     )
     private long branchStorageId;
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="branch_id")
     private Branch branch;
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="storage_id")
     private Storage storage;
 }

@@ -11,12 +11,8 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class BranchController {
 
-    private BranchService branchService;
-
     @Autowired
-    public BranchController(BranchService branchService) {
-        this.branchService = branchService;
-    }
+    private BranchService branchService;
 
     @GetMapping(path = "/findall")
     public List<Branch> retrieveAll(){

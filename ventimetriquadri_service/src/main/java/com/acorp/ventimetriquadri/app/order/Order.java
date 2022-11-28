@@ -12,10 +12,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-@Entity(name = "Order")
-@Table(name = "ORDER",
+@Entity(name = "OrderEntity")
+@Table(name = "ORDER_ENTITY",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"order_id"}))
+        @UniqueConstraint(columnNames={"order_entity_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -24,20 +24,20 @@ public class Order implements Serializable {
 
     @Id
     @SequenceGenerator(
-            name = "order_id",
-            sequenceName = "order_id",
+            name = "order_entity_id",
+            sequenceName = "order_entity_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "order_id"
+            generator = "order_entity_id"
     )
     @Column(
-            name = "order_id",
+            name = "order_entity_id",
             updatable = false
     )
     private long orderId;
-
+    private String orderCode;
     private String closedBy;
     private String creationDate;
     private String deliveryDate;
