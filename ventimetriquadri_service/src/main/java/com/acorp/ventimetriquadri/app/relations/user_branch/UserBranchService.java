@@ -8,6 +8,7 @@ import com.acorp.ventimetriquadri.app.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,12 +28,20 @@ public class UserBranchService {
 
     public List<Branch> retrieveAllBranchesByUserId(long userId){
 
-        List<Branch> branches = userBranchRepository.retrieveBranchesByUserId(UserEntity.builder().userId(userId).build());
+        List<UserBranch> userBranches = userBranchRepository.retrieveBranchesByUserId(UserEntity.builder().userId(userId).build());
+
+        List<Branch> branches = new ArrayList<>();
+
+        for (UserBranch ub : userBranches){
+            ub.getBranch().setToken(ub.getToken());
+            branches.add(ub.getBranch());
+        }
 
         for(Branch branch : branches){
-           branch.setStorageList(branchStorageService.findAllStorageByBranch(branch));
-           branch.setSupplierList(branchSupplierService.findAllSupplierByBranch(branch));
-           branch.setOrderList(orderProductService.findAllOrderByBranch(branch));
+            branch.setStorageList(branchStorageService.findAllStorageByBranch(branch));
+            branch.setSupplierList(branchSupplierService.findAllSupplierByBranch(branch));
+//            branch.setOrderList(branchOrderService.findOrdersByBranchId(branch));
+//           branch.setBranchEvent(branchEventStorageService.findEventsByBranchId(branch));
         }
         return branches;
     }
