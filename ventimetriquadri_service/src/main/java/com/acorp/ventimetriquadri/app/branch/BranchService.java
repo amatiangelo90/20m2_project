@@ -1,8 +1,10 @@
 package com.acorp.ventimetriquadri.app.branch;
 
+import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierService;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchRepository;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchService;
+import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import com.acorp.ventimetriquadri.app.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class BranchService {
 
     @Autowired
     private UserBranchService userBranchService;
+
+    @Autowired
+    private BranchSupplierService branchSupplierService;
 
     @Transactional
     public void addNewBranch(Branch branch) {
@@ -79,4 +84,9 @@ public class BranchService {
     public List<Branch> findByUserId(long userId) {
         return userBranchService.retrieveAllBranchesByUserId(userId);
     }
+
+    public List<Supplier> retrieveSuppliersByBranchId(long branchId){
+        return branchSupplierService.findAllSupplierByBranch(Branch.builder().branchId(branchId).build());
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.acorp.ventimetriquadri.app.relations.branch_order;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
-import com.acorp.ventimetriquadri.app.order.Order;
+import com.acorp.ventimetriquadri.app.order.OrderEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +37,6 @@ public class BranchOrder implements Serializable {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="order_id")
-    private Order order;
+    private OrderEntity orderEntity;
 
 }

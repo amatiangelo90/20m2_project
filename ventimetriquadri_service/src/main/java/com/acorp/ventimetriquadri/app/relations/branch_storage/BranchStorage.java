@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity(name = "BranchStorage")
-@Table(name = "BRANCH_STORAGE")
+@Table(name = "BRANCH_STORAGE", uniqueConstraints=
+@UniqueConstraint(columnNames={"branch_id", "storage_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

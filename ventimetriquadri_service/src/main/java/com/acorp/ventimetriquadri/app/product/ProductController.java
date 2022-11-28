@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.app.product;
 
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,12 +12,11 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProductController {
 
+    @Autowired
     private ProductService productService;
 
     @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private SupplierProductService supplierProductService;
 
     @GetMapping(path = "/findall")
     public List<Product> retrieveAll(){
@@ -34,5 +34,10 @@ public class ProductController {
     @PutMapping(path = "/update")
     public void update(Product product){
         productService.update(product);
+    }
+
+    @GetMapping(path = "/retrievebysupplier")
+    public List<Product> retrieveProductsBySupplierId(@RequestParam long supplierId){
+        return supplierProductService.findAllBySupplierId(supplierId);
     }
 }

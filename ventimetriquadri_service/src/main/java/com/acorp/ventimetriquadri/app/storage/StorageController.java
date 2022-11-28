@@ -1,6 +1,7 @@
 package com.acorp.ventimetriquadri.app.storage;
 
 
+import com.acorp.ventimetriquadri.app.product.Product;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,10 @@ public class StorageController {
 
     @PostMapping(path = "/save")
     public Storage save(Storage storage) { return storageService.saveStorage(storage); }
+
+    @GetMapping(path = "/insertproduct")
+    public void save(@RequestParam long storageId, @RequestParam long productId) { storageService.saveProduct(storageId, productId); }
+
 
     @DeleteMapping(path = "/delete")
     public void delete(Storage storage){

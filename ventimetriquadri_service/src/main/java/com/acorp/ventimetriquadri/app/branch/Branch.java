@@ -1,6 +1,6 @@
 package com.acorp.ventimetriquadri.app.branch;
 
-import com.acorp.ventimetriquadri.app.order.Order;
+import com.acorp.ventimetriquadri.app.order.OrderEntity;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import lombok.AllArgsConstructor;
@@ -61,7 +61,7 @@ public class Branch implements Serializable {
     private List<Supplier> supplierList;
 
     @Transient
-    private List<Order> orderList;
+    private List<OrderEntity> orderEntityList;
 
     @Transient
     private String token;

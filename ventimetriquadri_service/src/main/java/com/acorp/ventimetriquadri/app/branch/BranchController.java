@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.app.branch;
 
+import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,8 @@ public class BranchController {
         return branchService.findAll();
     }
 
-    @GetMapping(path = "/findByUserId")
-    public List<Branch> retrieveByUserId(@RequestParam("userId") long userId){
+    @GetMapping(path = "/retrievebranchbyuserid")
+    public List<Branch> retrieveByUserId(@RequestParam("userid") long userId){
         return branchService.findByUserId(userId);
     }
 
@@ -35,5 +36,10 @@ public class BranchController {
     @PutMapping(path = "/update")
     public void update(Branch branch){
         branchService.update(branch);
+    }
+
+    @GetMapping(path = "/retrievesuppliersbybranchid")
+    public List<Supplier> retrieveAllSuppliersByBranchId(@RequestParam("branchid") long branchId){
+        return branchService.retrieveSuppliersByBranchId(branchId);
     }
 }

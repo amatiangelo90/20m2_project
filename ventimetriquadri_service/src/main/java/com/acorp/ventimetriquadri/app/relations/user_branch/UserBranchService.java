@@ -40,7 +40,7 @@ public class UserBranchService {
         for(Branch branch : branches){
             branch.setStorageList(branchStorageService.findAllStorageByBranch(branch));
             branch.setSupplierList(branchSupplierService.findAllSupplierByBranch(branch));
-//            branch.setOrderList(branchOrderService.findOrdersByBranchId(branch));
+//            branch.setOrderEntityList(branchOrderService.findOrdersByBranchId(branch));
 //           branch.setBranchEvent(branchEventStorageService.findEventsByBranchId(branch));
         }
         return branches;

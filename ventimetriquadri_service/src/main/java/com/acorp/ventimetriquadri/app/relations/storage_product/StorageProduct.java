@@ -3,6 +3,7 @@ package com.acorp.ventimetriquadri.app.relations.storage_product;
 import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class StorageProduct {
 
     @Id

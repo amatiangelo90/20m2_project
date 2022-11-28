@@ -7,19 +7,19 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    public void createOrder(Order order) {
+    public void createOrder(OrderEntity orderEntity) {
 
     }
 
-    public List<Order> findAll() {
+    public List<OrderEntity> findAll() {
         return null;
     }
 
-    public void delete(Order order) {
+    public void delete(OrderEntity orderEntity) {
 
     }
 
-    public void update(Order order) {
+    public void update(OrderEntity orderEntity) {
 
     }
 }

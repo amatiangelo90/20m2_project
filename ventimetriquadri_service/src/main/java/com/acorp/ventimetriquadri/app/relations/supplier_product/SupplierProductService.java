@@ -14,7 +14,6 @@ public class SupplierProductService {
     @Autowired
     private SupplierProductRepository supplierProductRepository;
 
-
     public List<Product> findAllBySupplierId(long supplierId) {
         return supplierProductRepository.findAllBySupplierId(Supplier.builder().supplierId(supplierId).build());
     }

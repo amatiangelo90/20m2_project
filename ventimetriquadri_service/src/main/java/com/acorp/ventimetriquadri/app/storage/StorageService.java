@@ -1,8 +1,10 @@
 package com.acorp.ventimetriquadri.app.storage;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorage;
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageRepository;
+import com.acorp.ventimetriquadri.app.relations.storage_product.StorageProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ public class StorageService {
 
     @Autowired
     private BranchStorageRepository branchStorageRepository;
+
+    @Autowired
+    private StorageProductService storageProductService;
 
     @Transactional
     public Storage saveStorage(Storage storage) {
@@ -64,4 +69,8 @@ public class StorageService {
     }
 
 
+
+    public void saveProduct(long storageId, long productId) {
+        storageProductService.insertProductIntoStorage(storageId, productId);
+    }
 }

@@ -1,6 +1,6 @@
 package com.acorp.ventimetriquadri.app.relations.order_product;
 
-import com.acorp.ventimetriquadri.app.order.Order;
+import com.acorp.ventimetriquadri.app.order.OrderEntity;
 import com.acorp.ventimetriquadri.app.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +37,7 @@ public class OrderProduct {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="order_entity_id")
-    private Order order;
+    private OrderEntity orderEntity;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="product_id")

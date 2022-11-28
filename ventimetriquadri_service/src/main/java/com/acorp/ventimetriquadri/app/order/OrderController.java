@@ -1,6 +1,5 @@
 package com.acorp.ventimetriquadri.app.order;
 
-import com.acorp.ventimetriquadri.app.product.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,21 +18,21 @@ public class OrderController {
     }
 
     @GetMapping(path = "/findall")
-    public List<Order> retrieveAll(){
+    public List<OrderEntity> retrieveAll(){
         return orderService.findAll();
     }
 
     @PostMapping(path = "/save")
-    public void save(Order order) { orderService.createOrder(order); }
+    public void save(OrderEntity orderEntity) { orderService.createOrder(orderEntity); }
 
     @DeleteMapping(path = "/delete")
-    public void delete(Order order){
-        orderService.delete(order);
+    public void delete(OrderEntity orderEntity){
+        orderService.delete(orderEntity);
     }
 
     @PutMapping(path = "/update")
-    public void update(Order order){
-        orderService.update(order);
+    public void update(OrderEntity orderEntity){
+        orderService.update(orderEntity);
     }
 
 }

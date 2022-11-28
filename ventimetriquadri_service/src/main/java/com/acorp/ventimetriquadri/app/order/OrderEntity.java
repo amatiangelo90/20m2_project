@@ -20,7 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Builder
-public class Order implements Serializable {
+public class OrderEntity implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -52,9 +52,9 @@ public class Order implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Order)) return false;
-        Order order = (Order) o;
-        return orderId == order.orderId;
+        if (!(o instanceof OrderEntity)) return false;
+        OrderEntity orderEntity = (OrderEntity) o;
+        return orderId == orderEntity.orderId;
     }
 
     @Override
