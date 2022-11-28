@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity(name = "StorageProduct")
-@Table(name = "STORAGE_PRODUCT")
+@Table(name = "STORAGE_PRODUCT", uniqueConstraints=
+    @UniqueConstraint(columnNames={"product_id", "storage_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -31,16 +32,13 @@ public class StorageProduct {
     )
     private long storageProductId;
 
-    private String creationDate = "";
-    private String editDate = "";
-    private String stock = "";
-    private float amountHundred;
-    private String available;
+    private double stock;
+    private double amountHundred;
+    private boolean isAvailable;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="product_id")
     private Product product;
-
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="storage_id")
