@@ -1,14 +1,23 @@
 package com.acorp.ventimetriquadri.website.service;
 
+import com.acorp.ventimetriquadri.website.PienissimoClient;
+import com.acorp.ventimetriquadri.website.entity.BranchLocation;
 import com.acorp.ventimetriquadri.website.entity.Customer;
 import com.acorp.ventimetriquadri.website.entity.CustomerAccess;
+import com.acorp.ventimetriquadri.website.entity.PienissimoEntity;
 import com.acorp.ventimetriquadri.website.repository.ConsumersRepository;
 import com.acorp.ventimetriquadri.website.repository.CustomerAccessRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static java.lang.Thread.sleep;
 
 
 @Service
@@ -19,7 +28,6 @@ public class CustomerService {
 
     @Autowired
     private CustomerAccessRepository customerAccessRepository;
-
 
     @Transactional
     public long addNewCustmer(Customer customer) {
@@ -47,15 +55,12 @@ public class CustomerService {
 
 
     public List<Customer> findAllByDate(String date) {
-
         List<CustomerAccess> accessOnCurrentDateList = customerAccessRepository.findAllCustomerIdsByAccessDate(date);
         List<Customer> allCustomersInIds = consumersRepository.findAllInIds(getCustomersIdsList(accessOnCurrentDateList));
 
         for(Customer customer : allCustomersInIds){
-//            customer.setAccessesList(getAccessListByCustomerId(accessOnCurrentDateList, customer.getCustomerId()));
             customer.setAccessesList(customerAccessRepository.findByCustomerId(customer.getCustomerId()));
         }
-
         return allCustomersInIds;
     }
 
@@ -91,18 +96,8 @@ public class CustomerService {
             throw new IllegalStateException("Errore. Non ho trovato utenti da aggiornare");
 
         }else{
-
-            if(updatingCustomer.get().getName() != customer.getName())
-                updatingCustomer.get().setName(customer.getName());
-
-            if(updatingCustomer.get().getDob() != customer.getDob())
-                updatingCustomer.get().setDob(customer.getDob());
-
-            if(updatingCustomer.get().getEmail() != customer.getEmail())
-                updatingCustomer.get().setEmail(customer.getEmail());
-
-            if(updatingCustomer.get().getLastname() != customer.getLastname())
-                updatingCustomer.get().setLastname(customer.getLastname());
+            consumersRepository.delete(customer);
+            consumersRepository.save(customer);
 
         }
     }

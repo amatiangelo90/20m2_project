@@ -46,7 +46,4 @@ public class Product implements Serializable {
 
     @JsonIgnore
     private long supplierId;
-
-    @Transient
-    private double orderAmount;
 }

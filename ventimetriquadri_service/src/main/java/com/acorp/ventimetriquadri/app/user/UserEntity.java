@@ -46,6 +46,6 @@ public class UserEntity {
             unique = true,
             nullable = false
     )
-    private String phoneNumber;
+    private String phone = "";
 
 }

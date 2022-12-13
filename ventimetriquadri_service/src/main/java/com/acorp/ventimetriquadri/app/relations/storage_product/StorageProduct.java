@@ -2,6 +2,7 @@ package com.acorp.ventimetriquadri.app.relations.storage_product;
 
 import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.storage.Storage;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +34,6 @@ public class StorageProduct {
             updatable = false
     )
     private long storageProductId;
-
     private double stock;
     private double amountHundred;
     private boolean isAvailable;
@@ -44,6 +44,7 @@ public class StorageProduct {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="storage_id")
+    @JsonIgnore
     private Storage storage;
 
 }

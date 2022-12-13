@@ -1,7 +1,6 @@
 package com.acorp.ventimetriquadri.app.storage;
 
 
-import com.acorp.ventimetriquadri.app.product.Product;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +17,9 @@ public class StorageController {
     @Autowired
     private StorageService storageService;
 
-    @GetMapping(path = "/findall")
-    public List<Storage> retrieveAll(){
-        return storageService.findAll();
+    @GetMapping(path = "/findstoragebybranchid")
+    public List<Storage> findStorageByBranchId(@RequestParam("branchid") long branchid){
+        return storageService.findStoragesByBranchId(branchid);
     }
 
     @PostMapping(path = "/save")

@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "Supplier")
@@ -62,4 +63,16 @@ public class Supplier implements Serializable {
     @Transient
     List<Product> productList;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Supplier)) return false;
+        Supplier supplier = (Supplier) o;
+        return supplierId == supplier.supplierId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(supplierId);
+    }
 }

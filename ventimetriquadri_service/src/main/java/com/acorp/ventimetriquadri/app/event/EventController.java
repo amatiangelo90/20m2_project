@@ -1,5 +1,7 @@
 package com.acorp.ventimetriquadri.app.event;
 
+import com.acorp.ventimetriquadri.app.event.expences.ExpenceService;
+import com.acorp.ventimetriquadri.app.event.expences.Expence;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,20 +13,22 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class EventController {
 
+    @Autowired
     private EventService eventService;
 
     @Autowired
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
+    private ExpenceService expenceService;
 
-    @GetMapping(path = "/findall")
-    public List<Event> retrieveAll(){
-        return eventService.findAll();
+
+    @GetMapping(path = "/findbybranchid")
+    public List<Event> retrieveAll(@RequestParam("branchid") long branchId){
+        return eventService.findByBranchId(branchId);
     }
 
     @PostMapping(path = "/save")
-    public void save(Event event) { eventService.addNewEvent(event); }
+    public Event save(Event event) {
+        return eventService.saveEvent(event);
+    }
 
     @DeleteMapping(path = "/delete")
     public void delete(Event event){
@@ -34,5 +38,25 @@ public class EventController {
     @PutMapping(path = "/update")
     public void update(Event event){
         eventService.update(event);
+    }
+
+    @PostMapping(path = "/expence/create")
+    public Expence saveExpence(Expence expence){
+        return expenceService.saveExpence(expence);
+    }
+
+    @DeleteMapping(path = "/expence/delete")
+    public void deleteExpence(Expence expence){
+        expenceService.delete(expence);
+    }
+
+    @PutMapping(path = "/expence/update")
+    public Expence updateExpence(Expence expence){
+        return expenceService.update(expence);
+    }
+
+    @GetMapping(path = "/expence/retrievebyeventid")
+    public List<Expence> retrieveAllExpenpencesByEventId(@RequestParam("eventid") long eventId){
+        return expenceService.findByEventId(eventId);
     }
 }

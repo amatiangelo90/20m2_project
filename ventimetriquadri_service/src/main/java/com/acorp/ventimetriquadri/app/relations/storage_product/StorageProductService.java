@@ -5,6 +5,8 @@ import com.acorp.ventimetriquadri.app.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StorageProductService {
 
@@ -26,5 +28,9 @@ public class StorageProductService {
                     .storage(Storage.builder().storageId(storageId).build())
                     .build());
         }
+    }
+
+    public List<StorageProduct> retrieveAllProductByStorage(Storage storage) {
+        return storageProductRepository.retrieveProductsByStorage(storage);
     }
 }

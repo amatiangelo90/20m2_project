@@ -30,7 +30,7 @@ public class UsersController {
     }
 
     @PostMapping(path = "/save")
-    public void save(UserEntity userEntity) { userService.addNewBranch(userEntity); }
+    public void save(UserEntity userEntity) { userService.addNewUser(userEntity); }
 
     @DeleteMapping(path = "/delete")
     public void delete(UserEntity userEntity){

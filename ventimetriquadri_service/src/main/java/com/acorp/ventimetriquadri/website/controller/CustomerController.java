@@ -25,11 +25,11 @@ public class CustomerController {
         return customerService.findAll();
     }
 
+
     @GetMapping(path = "/findallbydate")
     public List<Customer> retrieveAllByDate(@RequestParam("date") String date){
         return customerService.findAllByDate(date);
     }
-
     @PostMapping(path = "/save")
     public long save(Customer customer) { return customerService.addNewCustmer(customer); }
 
@@ -47,5 +47,4 @@ public class CustomerController {
     public Customer retrieveByPhone(@RequestParam("phone") String phone){
         return customerService.findByPhone(phone);
     }
-
 }

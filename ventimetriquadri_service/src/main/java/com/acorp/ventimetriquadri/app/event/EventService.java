@@ -1,11 +1,16 @@
 package com.acorp.ventimetriquadri.app.event;
 
 
-import com.acorp.ventimetriquadri.app.event.event_expences.EventExpenceRepository;
+import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorage;
+import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorageService;
+import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceService;
+import com.acorp.ventimetriquadri.app.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,28 +21,28 @@ public class EventService {
     private EventRepository eventRepository;
 
     @Autowired
-    private EventExpenceRepository eventExpenceRepository;
+    private EventExpenceService eventExpenceService;
+
+    @Autowired
+    private BranchEventStorageService branchEventStorageService;
 
 
     @Transactional
-    public void addNewEvent(Event event) {
-        eventRepository.save(event);
+    public Event saveEvent(Event event) {
+        Event eventSaved = eventRepository.save(event);
+
+        branchEventStorageService.saveBranchEventStorageEntity(
+                BranchEventStorage.builder()
+                    .event(eventSaved)
+                    .storage(Storage.builder().storageId(event.getStorageId()).build())
+                    .branch(Branch.builder().branchId(event.getStorageId()).build())
+                        .build());
+
+        return eventSaved;
     }
 
     public void delete(Event event){
         eventRepository.deleteById(event.getEventId());
-    }
-
-    public List<Event> findAll() {
-
-
-        List<Event> allEvents = eventRepository.findAll();
-
-        for(Event event : allEvents){
-            event.setEventExpences(eventExpenceRepository.findAllByEventId(event.getEventId()));
-        }
-
-        return allEvents;
     }
 
     @Transactional
@@ -61,4 +66,18 @@ public class EventService {
         }
     }
 
+    public List<Event> findByBranchId(long branchId) {
+
+        List<Event> events = new ArrayList<>();
+
+        List<BranchEventStorage> allByBranchId = branchEventStorageService.findAllByBranchId(Branch.builder().branchId(branchId).build());
+        for(BranchEventStorage branchEventStorageService : allByBranchId){
+            events.add(branchEventStorageService.getEvent());
+        }
+        for(Event event : events){
+            event.setExpences(eventExpenceService.retrieveAllExpenceByEventId(event.getEventId()));
+        }
+
+        return events;
+    }
 }

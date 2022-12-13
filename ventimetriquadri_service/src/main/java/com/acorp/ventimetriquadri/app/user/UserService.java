@@ -13,8 +13,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
-    public void addNewBranch(UserEntity userEntity) {
+//    @Transactional
+    public void addNewUser(UserEntity userEntity) {
+
         userRepository.save(userEntity);
     }
 
@@ -41,8 +42,8 @@ public class UserService {
             if(updatingUser.get().getEmail() != userEntity.getEmail())
                 updatingUser.get().setEmail(userEntity.getEmail());
 
-            if(updatingUser.get().getPhoneNumber() != userEntity.getPhoneNumber())
-                updatingUser.get().setPhoneNumber(userEntity.getPhoneNumber());
+            if(updatingUser.get().getPhone() != userEntity.getPhone())
+                updatingUser.get().setPhone(userEntity.getPhone());
 
         }
     }

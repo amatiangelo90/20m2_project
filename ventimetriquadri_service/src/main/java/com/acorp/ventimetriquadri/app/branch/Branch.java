@@ -1,13 +1,12 @@
 package com.acorp.ventimetriquadri.app.branch;
 
-import com.acorp.ventimetriquadri.app.order.OrderEntity;
+import com.acorp.ventimetriquadri.app.event.Event;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -55,13 +54,13 @@ public class Branch implements Serializable {
     private long userId;
 
     @Transient
-    private List<Storage> storageList;
+    private List<Storage> storages;
 
     @Transient
-    private List<Supplier> supplierList;
+    private List<Supplier> suppliers;
 
     @Transient
-    private List<OrderEntity> orderEntityList;
+    private List<Event> events;
 
     @Transient
     private String token;

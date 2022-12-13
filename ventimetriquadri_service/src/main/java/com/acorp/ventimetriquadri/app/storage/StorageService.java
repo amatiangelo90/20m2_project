@@ -4,6 +4,7 @@ import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorage;
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageRepository;
+import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageService;
 import com.acorp.ventimetriquadri.app.relations.storage_product.StorageProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,17 @@ public class StorageService {
     private StorageRepository storageRepository;
 
     @Autowired
-    private BranchStorageRepository branchStorageRepository;
+    private StorageProductService storageProductService;
 
     @Autowired
-    private StorageProductService storageProductService;
+    private BranchStorageService branchStorageService;
 
     @Transactional
     public Storage saveStorage(Storage storage) {
 
         Storage storageSaved = storageRepository.save(storage);
 
-        branchStorageRepository.save(BranchStorage.builder()
+        branchStorageService.save(BranchStorage.builder()
                 .storage(storageSaved)
                 .branch(Branch.builder().branchId(storage.getBranchId()).build()).build());
 
@@ -73,4 +74,10 @@ public class StorageService {
     public void saveProduct(long storageId, long productId) {
         storageProductService.insertProductIntoStorage(storageId, productId);
     }
+
+    public List<Storage> findStoragesByBranchId(long branchid) {
+        return branchStorageService.findAllStorageByBranch(Branch.builder().branchId(branchid).build());
+    }
+
+
 }

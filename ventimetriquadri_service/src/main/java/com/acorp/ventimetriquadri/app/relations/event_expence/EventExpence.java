@@ -1,22 +1,22 @@
-package com.acorp.ventimetriquadri.app.event.event_expences;
+package com.acorp.ventimetriquadri.app.relations.event_expence;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.acorp.ventimetriquadri.app.event.Event;
+import com.acorp.ventimetriquadri.app.event.expences.Expence;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity(name = "EventExpence")
-@Table(name = "EVENT_EXPENCE",
-        uniqueConstraints=
-        @UniqueConstraint(columnNames={"event_expence_id"}))
+@Table(name = "EVENT_EXPENCE")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class EventExpence {
+public class EventExpence implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -33,15 +33,14 @@ public class EventExpence {
             updatable = false
     )
     private long eventExpenceId;
-    private String description;
-    private double amount;
-    private String dateIntert;
 
-    @Column(
-            name = "event_id",
-            updatable = false
-    )
-    @JsonIgnore
-    private long eventId;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="event_id")
+    private Event event;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="expence_id")
+    private Expence expence;
+
 
 }

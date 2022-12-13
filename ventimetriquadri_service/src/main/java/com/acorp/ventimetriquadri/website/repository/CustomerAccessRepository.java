@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.website.repository;
 
+import com.acorp.ventimetriquadri.website.entity.Customer;
 import com.acorp.ventimetriquadri.website.entity.CustomerAccess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +23,8 @@ public interface CustomerAccessRepository extends JpaRepository<CustomerAccess, 
 
     @Query(value = "DELETE FROM CustomerAccess WHERE customerId = ?1")
     void deleteAllAccessesByCustomerId(long customerId);
+
+    @Query(value = "SELECT u FROM CustomerAccess u where u.accessDate = ?1")
+    List<CustomerAccess> findAllByDate(String date);
+
 }

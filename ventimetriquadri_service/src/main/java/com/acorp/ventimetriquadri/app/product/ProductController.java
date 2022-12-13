@@ -1,7 +1,6 @@
 package com.acorp.ventimetriquadri.app.product;
 
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductService;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ public class ProductController {
     }
 
     @PostMapping(path = "/save")
-    public void save(Product product) { productService.addNewProduct(product); }
+    public void save(Product product) { productService.saveProduct(product); }
 
     @DeleteMapping(path = "/delete")
     public void delete(Product product){
