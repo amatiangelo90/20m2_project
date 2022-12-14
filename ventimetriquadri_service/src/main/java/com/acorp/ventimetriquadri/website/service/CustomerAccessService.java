@@ -1,7 +1,5 @@
 package com.acorp.ventimetriquadri.website.service;
 
-import com.acorp.ventimetriquadri.configuration.AppConfiguration;
-import com.acorp.ventimetriquadri.website.entity.Customer;
 import com.acorp.ventimetriquadri.website.entity.CustomerAccess;
 import com.acorp.ventimetriquadri.website.repository.CustomerAccessRepository;
 import org.slf4j.Logger;
@@ -10,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

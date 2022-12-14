@@ -1,4 +1,4 @@
-package com.acorp.ventimetriquadri.configuration;
+package com.acorp.ventimetriquadri.scheduler;
 
 import com.acorp.ventimetriquadri.utils.Utils;
 import com.acorp.ventimetriquadri.website.PienissimoClient;
@@ -27,9 +27,9 @@ import static java.lang.Thread.sleep;
 
 @EnableScheduling
 @Configuration
-public class AppConfiguration {
+public class Scheduler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(Scheduler.class);
 
     @Autowired
     private PienissimoClient pienissimoClient;
