@@ -3,7 +3,10 @@ package com.acorp.ventimetriquadri.app.supplier;
 import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplier;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierRepository;
+import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierService;
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
 import com.acorp.ventimetriquadri.exception.VentiMetriQuadriCustomException;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,25 +16,28 @@ import java.util.Optional;
 
 
 @Service
+@AllArgsConstructor
 public class SuppliersService {
 
     @Autowired
     private SupplierRepository supplierRepository;
 
     @Autowired
-    private BranchSupplierRepository branchSupplierRepository;
+    private BranchSupplierService branchSupplierService;
+
+
+
 
     @Transactional
     public Supplier saveSupplier(Supplier supplier) {
 
         try{
             Supplier supplierdSaved = supplierRepository.save(supplier);
-            branchSupplierRepository.save(
+            branchSupplierService.save(
                     BranchSupplier.builder()
                             .branch(Branch.builder().branchId(supplier.getBranchId()).build())
                             .supplier(supplierdSaved)
-                            .build()
-            );
+                            .build());
             return supplierdSaved;
         }catch(Exception e){
             throw new IllegalStateException(e);
@@ -81,4 +87,6 @@ public class SuppliersService {
     public Supplier findByPhone(String phone) {
         return supplierRepository.findByPhone(phone);
     }
+
+
 }

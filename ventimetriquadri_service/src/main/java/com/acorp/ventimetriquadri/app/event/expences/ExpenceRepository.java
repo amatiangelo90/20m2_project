@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ExpenceRepository extends JpaRepository<Expence, Long> {
-    @Query("SELECT e FROM Expence e WHERE eventId = ?1")
-    List<Expence> findAllByEventId(long eventId);
+public interface ExpenceRepository extends JpaRepository<ExpenceEvent, Long> {
+    @Query("SELECT e FROM ExpenceEvent e WHERE eventId = ?1")
+    List<ExpenceEvent> findAllByEventId(long eventId);
 }

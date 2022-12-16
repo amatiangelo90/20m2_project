@@ -1,22 +1,18 @@
 package com.acorp.ventimetriquadri.app.product;
 
-import com.acorp.ventimetriquadri.app.product.Product;
-import com.acorp.ventimetriquadri.app.product.ProductRepository;
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProduct;
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
-import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
-import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchRepository;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
-import com.acorp.ventimetriquadri.app.user.UserEntity;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
 
     @Autowired
@@ -25,10 +21,16 @@ public class ProductService {
     @Autowired
     private SupplierProductRepository supplierProductRepository;
 
+    public void save(SupplierProduct supplierProduct) {
+        supplierProductRepository.save(supplierProduct);
+    }
 
     @Transactional
     public void saveProduct(Product product) {
 
+        if(product.getSupplierId() == 0){
+            throw new IllegalArgumentException("Error - Cannot save product if supplier id is not provided. Impossible to create relation");
+        }
         Product prodSaved = productRepository.save(product);
         supplierProductRepository.save(
                 SupplierProduct.builder()
@@ -73,5 +75,9 @@ public class ProductService {
                 updatingBranch.get().setUnitMeasure(product.getUnitMeasure());
 
         }
+    }
+
+    public List<Product> findAllBySupplierId(long supplierId) {
+        return supplierProductRepository.findAllBySupplierId(Supplier.builder().supplierId(supplierId).build());
     }
 }

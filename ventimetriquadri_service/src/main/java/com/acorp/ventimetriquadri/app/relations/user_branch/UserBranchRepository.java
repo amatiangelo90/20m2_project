@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.app.relations.user_branch;
 
+import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

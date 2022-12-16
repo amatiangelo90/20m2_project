@@ -26,7 +26,7 @@ public class StorageController {
     public Storage save(Storage storage) { return storageService.saveStorage(storage); }
 
     @GetMapping(path = "/insertproduct")
-    public void save(@RequestParam long storageId, @RequestParam long productId) { storageService.saveProduct(storageId, productId); }
+    public void save(@RequestParam long storageId, @RequestParam long productId) { storageService.insertProductIntoStorage(storageId, productId); }
 
 
     @DeleteMapping(path = "/delete")
@@ -37,6 +37,11 @@ public class StorageController {
     @PutMapping(path = "/update")
     public void update(Storage storage){
         storageService.update(storage);
+    }
+
+    @DeleteMapping
+    public void deleteProductFromStorage(@RequestParam long storageId, @RequestParam long productId){
+        storageService.removeProductFromStorage(storageId, productId);
     }
 
 }

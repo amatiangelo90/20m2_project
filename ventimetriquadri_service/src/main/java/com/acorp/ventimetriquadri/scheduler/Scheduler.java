@@ -40,7 +40,7 @@ public class Scheduler {
     @Autowired
     private CustomerService customerService;
 
-    @Scheduled(cron = "0 30 0 * * *")
+    @Scheduled(cron = "0 45 22 * * *")
     public void migrateCustomerDataToPienissimoServer() {
 
         Instant now = Instant.now();

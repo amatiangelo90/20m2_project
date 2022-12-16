@@ -16,8 +16,9 @@ import java.io.Serializable;
 public class R_StorageProduct implements Serializable {
 
     private long storageProductId;
+    private String productName;
     private double stock;
     private double amountHundred;
     private boolean isAvailable;
-    private Product product;
+    private long productId;
 }

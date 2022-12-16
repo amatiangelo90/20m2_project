@@ -1,19 +1,23 @@
 package com.acorp.ventimetriquadri.app.branch;
 
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierService;
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchRepository;
-import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchService;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import com.acorp.ventimetriquadri.app.user.UserEntity;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.BinaryRefAddr;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class BranchService {
 
     @Autowired
@@ -23,21 +27,26 @@ public class BranchService {
     private UserBranchRepository userBranchRepository;
 
     @Autowired
-    private UserBranchService userBranchService;
-
-    @Autowired
     private BranchSupplierService branchSupplierService;
 
+    @Autowired
+    private SupplierProductRepository supplierProductRepository;
+
     @Transactional
-    public void addNewBranch(Branch branch) {
+    public UserBranch addNewBranch(Branch branch) {
+        if(branch.getUserId() == 0){
+            throw new IllegalArgumentException("Error - User id must be provided to link current branch to a User Entity");
+        }
+
 
         Branch branchSaved = branchRepository.save(branch);
-        userBranchRepository.save(
-                UserBranch.builder()
-                        .userEntity(UserEntity.builder().userId(branch.getUserId()).build())
-                        .branch(branchSaved)
-                        .token(branch.getToken())
-                        .build());
+        UserBranch userBranch = UserBranch.builder()
+                .userEntity(UserEntity.builder().userId(branch.getUserId()).build())
+                .branch(branchSaved)
+                .token(branch.getToken())
+                .build();
+
+        return userBranchRepository.save(userBranch);
     }
 
     public void delete(Branch branch){
@@ -81,12 +90,13 @@ public class BranchService {
         }
     }
 
-    public List<Branch> findByUserId(long userId) {
-        return userBranchService.retrieveAllBranchesByUserId(userId);
-    }
-
     public List<Supplier> retrieveSuppliersByBranchId(long branchId){
-        return branchSupplierService.findAllSupplierByBranch(Branch.builder().branchId(branchId).build());
-    }
+        List<Supplier> allSupplierByBranch = branchSupplierService.findAllSupplierByBranch(Branch.builder().branchId(branchId).build());
 
+        for(Supplier supplier : allSupplierByBranch){
+            supplier.setProductList(supplierProductRepository.findAllBySupplierId(Supplier.builder().supplierId(supplier.getSupplierId()).build()));
+        }
+
+        return allSupplierByBranch;
+    }
 }

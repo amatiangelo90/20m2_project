@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.app.user;
 
+import com.acorp.ventimetriquadri.app.branch.Branch;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,11 @@ public class UsersController {
         return userService.findByEmail(email);
     }
 
+    @GetMapping(path = "/findAllBranchesByUserId")
+    public List<Branch> retrieveAllBranchesByUserId(@RequestParam long userId){
+        return userService.retrieveAllBranchesByUserId(userId);
+    }
+
     @PostMapping(path = "/save")
     public void save(UserEntity userEntity) { userService.addNewUser(userEntity); }
 
@@ -41,4 +47,6 @@ public class UsersController {
     public void update(UserEntity userEntity){
         userService.update(userEntity);
     }
+
+
 }

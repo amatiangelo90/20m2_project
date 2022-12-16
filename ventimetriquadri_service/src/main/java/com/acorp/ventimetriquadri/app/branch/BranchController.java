@@ -21,10 +21,10 @@ public class BranchController {
         return branchService.findAll();
     }
 
-    @GetMapping(path = "/retrievebranchbyuserid")
-    public List<Branch> retrieveByUserId(@RequestParam("userid") long userId){
-        return branchService.findByUserId(userId);
-    }
+//    @GetMapping(path = "/retrievebranchbyuserid")
+//    public List<Branch> retrieveByUserId(@RequestParam("userid") long userId){
+//        return branchService.findAllBranchesByUserId(userId);
+//    }
 
     @PostMapping(path = "/save")
     public void save(Branch branch) { branchService.addNewBranch(branch); }

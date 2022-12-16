@@ -22,6 +22,7 @@
 		<deploy.wildfly.password>password123</deploy.wildfly.password>
 	</properties>
 	<dependencies>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -31,12 +32,6 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.3.5</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -94,29 +89,46 @@
 			<version>2.8.5</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.jayway.jsonpath</groupId>-->
+			<!--<artifactId>json-path</artifactId>-->
+		<!--</dependency>-->
 	
 	
 		
 		<!-- TEST DEPENDENCY -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
+		
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-test</artifactId>-->
+			<!--<version>2.4.3</version>-->
+			<!--<scope>compile</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-test-autoconfigure</artifactId>-->
+			<!--<version>2.4.3</version>-->
+			<!--<scope>compile</scope>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!--<dependency>-->
+			<!--<groupId>io.zonky.test</groupId>-->
+			<!--<artifactId>embedded-database-spring-test</artifactId>-->
+			<!--<version>2.0.1</version>-->
+			<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!---->
 	</dependencies>
 	
 	<build>

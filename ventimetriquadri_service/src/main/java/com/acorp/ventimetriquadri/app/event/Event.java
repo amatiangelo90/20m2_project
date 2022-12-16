@@ -1,7 +1,8 @@
 package com.acorp.ventimetriquadri.app.event;
 
-import com.acorp.ventimetriquadri.app.event.expences.Expence;
+import com.acorp.ventimetriquadri.app.event.expences.ExpenceEvent;
 import com.acorp.ventimetriquadri.app.event.utils.EventStatus;
+import com.acorp.ventimetriquadri.app.event.workstations.Workstation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,7 +49,10 @@ public class Event implements Serializable {
     private String location = "";
 
     @Transient
-    private List<Expence> expences;
+    private List<ExpenceEvent> expenceEvents;
+
+    @Transient
+    private List<Workstation> workstations;
 
     @Transient
     private long branchId;

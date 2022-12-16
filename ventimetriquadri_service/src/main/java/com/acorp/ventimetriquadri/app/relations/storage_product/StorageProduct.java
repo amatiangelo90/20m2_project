@@ -34,13 +34,16 @@ public class StorageProduct {
             updatable = false
     )
     private long storageProductId;
+
+    private String productName;
     private double stock;
     private double amountHundred;
     private boolean isAvailable;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="product_id")
-    private Product product;
+    @Column(
+            name = "product_id",
+            updatable = false
+    )
+    private long productId;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="storage_id")

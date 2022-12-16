@@ -8,28 +8,28 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "Expence")
-@Table(name = "EXPENCE",
+@Entity(name = "ExpenceEvent")
+@Table(name = "EXPENCE_EVENT",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"expence_id"}))
+        @UniqueConstraint(columnNames={"expence_event_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Expence {
+public class ExpenceEvent {
 
     @Id
     @SequenceGenerator(
-            name = "expence_id",
-            sequenceName = "expence_id",
+            name = "expence_event_id",
+            sequenceName = "expence_event_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "expence_id"
+            generator = "expence_event_id"
     )
     @Column(
-            name = "expence_id",
+            name = "expence_event_id",
             updatable = false
     )
     private long expenceId;
@@ -37,10 +37,6 @@ public class Expence {
     private double amount;
     private String dateIntert;
 
-    @Column(
-            name = "event_id",
-            updatable = false
-    )
     @JsonIgnore
     private long eventId;
 

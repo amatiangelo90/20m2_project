@@ -42,7 +42,7 @@ public class Storage {
     private String creationDate = "";
     private String address= "";
     private String city = "";
-    private int cap;
+    private String cap = "";
 
     @Transient
     private long branchId;

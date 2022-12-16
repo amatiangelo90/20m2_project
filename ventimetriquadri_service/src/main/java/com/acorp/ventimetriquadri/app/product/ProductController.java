@@ -1,6 +1,7 @@
 package com.acorp.ventimetriquadri.app.product;
 
-import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductService;
+import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
+import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
-    private SupplierProductService supplierProductService;
+    private SupplierProductRepository supplierProductRepository;
 
     @GetMapping(path = "/findall")
     public List<Product> retrieveAll(){
@@ -37,6 +38,6 @@ public class ProductController {
 
     @GetMapping(path = "/retrievebysupplier")
     public List<Product> retrieveProductsBySupplierId(@RequestParam long supplierId){
-        return supplierProductService.findAllBySupplierId(supplierId);
+        return supplierProductRepository.findAllBySupplierId(Supplier.builder().supplierId(supplierId).build());
     }
 }

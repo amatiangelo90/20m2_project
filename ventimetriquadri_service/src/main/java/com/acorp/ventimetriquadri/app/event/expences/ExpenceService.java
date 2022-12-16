@@ -1,8 +1,8 @@
 package com.acorp.ventimetriquadri.app.event.expences;
 
 import com.acorp.ventimetriquadri.app.event.Event;
-import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpence;
-import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceService;
+import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRelation;
+import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
@@ -17,49 +17,48 @@ public class ExpenceService {
     private ExpenceRepository expenceRepository;
 
     @Autowired
-    private EventExpenceService eventExpenceService;
+    private EventExpenceRepository eventExpenceRepository;
 
 
-
-    public void delete(Expence expence){
-        expenceRepository.deleteById(expence.getExpenceId());
+    public void delete(ExpenceEvent expenceEvent){
+        expenceRepository.deleteById(expenceEvent.getExpenceId());
     }
 
-    public List<Expence> findAll() {
+    public List<ExpenceEvent> findAll() {
         return expenceRepository.findAll();
     }
 
     @Transactional
-    public Expence update(Expence expence) {
-        Optional<Expence> updatingEventExpence = expenceRepository.findById(expence.getExpenceId());
+    public ExpenceEvent update(ExpenceEvent expenceEvent) {
+        Optional<ExpenceEvent> updatingEventExpence = expenceRepository.findById(expenceEvent.getExpenceId());
         if(!updatingEventExpence.isPresent()){
             throw new IllegalStateException("Errore. Non ho trovato spese eventi da aggiornare");
         }else{
-            if(updatingEventExpence.get().getAmount() != expence.getAmount())
-                updatingEventExpence.get().setAmount(expence.getAmount());
+            if(updatingEventExpence.get().getAmount() != expenceEvent.getAmount())
+                updatingEventExpence.get().setAmount(expenceEvent.getAmount());
 
-            if(updatingEventExpence.get().getDescription() != expence.getDescription())
-                updatingEventExpence.get().setDescription(expence.getDescription());
+            if(updatingEventExpence.get().getDescription() != expenceEvent.getDescription())
+                updatingEventExpence.get().setDescription(expenceEvent.getDescription());
 
             return updatingEventExpence.get();
 
         }
     }
 
-    public List<Expence> findByEventId(long eventId) {
+    public List<ExpenceEvent> findByEventId(long eventId) {
         return expenceRepository.findAllByEventId(eventId);
     }
 
     @Transactional
-    public Expence saveExpence(Expence expence) {
+    public ExpenceEvent saveExpence(ExpenceEvent expenceEvent) {
 
-        Expence savedExpence = expenceRepository.save(expence);
+        ExpenceEvent savedExpenceEvent = expenceRepository.save(expenceEvent);
 
-        eventExpenceService.saveExpence(EventExpence
+        eventExpenceRepository.save(EventExpenceRelation
                 .builder()
-                .expence(savedExpence)
-                .event(Event.builder().eventId(expence.getEventId()).build()).build());
+                .expenceEvent(savedExpenceEvent)
+                .event(Event.builder().eventId(expenceEvent.getEventId()).build()).build());
 
-        return savedExpence;
+        return savedExpenceEvent;
     }
 }
