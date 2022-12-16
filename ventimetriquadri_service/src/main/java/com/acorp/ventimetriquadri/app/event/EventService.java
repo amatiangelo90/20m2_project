@@ -110,7 +110,7 @@ public class EventService {
     }
 
 
-    public void delete(Event event){
+    public void deleteExpence(Event event){
         eventRepository.deleteById(event.getEventId());
     }
 
@@ -169,14 +169,12 @@ public class EventService {
     }
 
     @Transactional
-    public void saveExpence(ExpenceEvent expenceEvent){
-        logger.info("Save expence event [" + expenceEvent.toString() + "]");
-        ExpenceEvent expenceSaved = expenceRepository.save(expenceEvent);
-        eventExpenceRepository.save(EventExpenceRelation.builder()
-                .event(Event.builder().eventId(expenceEvent.getEventId()).build())
-                .expenceEvent(expenceSaved)
-                .build());
+    public void deleteEventExpence(ExpenceEvent expenceEvent){
+        logger.info("Delete Event Expence : " + expenceEvent.toString());
+        eventExpenceRepository.deleteByExpenceId(expenceEvent.getExpenceId());
+        expenceRepository.delete(expenceEvent);
     }
+
 
     @Transactional
     public void closeEvent(Event event) {
@@ -192,4 +190,50 @@ public class EventService {
             throw new IllegalArgumentException("Errore - Impossibile chiudere l'evento " + event.toString() +". Non è stato possibile recuperare le informazioni tramite l'id evento " + event.getEventId());
         }
     }
+
+
+    // EXPENCE SERVICES
+
+    public void deleteExpence(ExpenceEvent expenceEvent){
+        expenceRepository.deleteById(expenceEvent.getExpenceId());
+    }
+
+    public List<ExpenceEvent> findAll() {
+        return expenceRepository.findAll();
+    }
+
+    @Transactional
+    public ExpenceEvent updateExpence(ExpenceEvent expenceEvent) {
+        Optional<ExpenceEvent> updatingEventExpence = expenceRepository.findById(expenceEvent.getExpenceId());
+        if(!updatingEventExpence.isPresent()){
+            throw new IllegalStateException("Errore. Non ho trovato spese eventi da aggiornare");
+        }else{
+            if(updatingEventExpence.get().getAmount() != expenceEvent.getAmount())
+                updatingEventExpence.get().setAmount(expenceEvent.getAmount());
+
+            if(updatingEventExpence.get().getDescription() != expenceEvent.getDescription())
+                updatingEventExpence.get().setDescription(expenceEvent.getDescription());
+
+            return updatingEventExpence.get();
+
+        }
+    }
+
+    public List<ExpenceEvent> findExpencesByEventId(long eventId) {
+        return expenceRepository.findAllByEventId(eventId);
+    }
+
+    @Transactional
+    public ExpenceEvent saveExpence(ExpenceEvent expenceEvent) {
+
+        ExpenceEvent savedExpenceEvent = expenceRepository.save(expenceEvent);
+
+        eventExpenceRepository.save(EventExpenceRelation
+                .builder()
+                .expenceEvent(savedExpenceEvent)
+                .event(Event.builder().eventId(expenceEvent.getEventId()).build()).build());
+
+        return savedExpenceEvent;
+    }
+
 }

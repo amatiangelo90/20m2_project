@@ -1,7 +1,6 @@
 package com.acorp.ventimetriquadri.app.event;
 
 import com.acorp.ventimetriquadri.app.event.expences.ExpenceEvent;
-import com.acorp.ventimetriquadri.app.event.expences.ExpenceService;
 import com.acorp.ventimetriquadri.app.event.workstations.Workstation;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,6 @@ public class EventController {
     private EventService eventService;
 
 
-    @Autowired
-    private ExpenceService expenceService;
-
-
     @GetMapping(path = "/findbybranchid")
     public List<Event> retrieveEventsByBranchId(@RequestParam("branchid") long branchId){
         return eventService.findOpenEventsByBranchId(branchId);
@@ -35,7 +30,7 @@ public class EventController {
 
     @DeleteMapping(path = "/delete")
     public void delete(Event event){
-        eventService.delete(event);
+        eventService.deleteExpence(event);
     }
 
     @PutMapping(path = "/update")
@@ -45,32 +40,29 @@ public class EventController {
 
 
     // WORKSTATION REOURCES
-
     @PostMapping(path = "/workstation/create")
     public Workstation createWorkstation(Workstation workstation){
         return eventService.createWorkstation(workstation);
     }
 
-
     // EXPENCE RESOURCES
-
     @GetMapping(path = "/expence/retrievebyeventid")
     public List<ExpenceEvent> retrieveAllExpenpencesByEventId(@RequestParam("eventid") long eventId){
-        return expenceService.findByEventId(eventId);
+        return eventService.findExpencesByEventId(eventId);
     }
 
     @PostMapping(path = "/expence/create")
     public ExpenceEvent saveExpence(ExpenceEvent expenceEvent){
-        return expenceService.saveExpence(expenceEvent);
+        return eventService.saveExpence(expenceEvent);
     }
 
     @DeleteMapping(path = "expence/delete")
-    public void delete(ExpenceEvent expenceEvent){
-        expenceService.delete(expenceEvent);
+    public void deleteExpence(ExpenceEvent expenceEvent){
+        eventService.deleteExpence(expenceEvent);
     }
 
     @PutMapping(path = "expence/update")
-    public void update(ExpenceEvent expenceEvent){
-        expenceService.update(expenceEvent);
+    public void updateExpence(ExpenceEvent expenceEvent){
+        eventService.updateExpence(expenceEvent);
     }
 }

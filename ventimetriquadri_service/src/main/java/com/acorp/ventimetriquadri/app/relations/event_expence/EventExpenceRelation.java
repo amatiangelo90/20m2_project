@@ -36,11 +36,11 @@ public class EventExpenceRelation implements Serializable {
     )
     private long eventExpenceId;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinColumn(name="event_id")
     private Event event;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.DETACH)
     @JoinColumn(name="expence_id")
     private ExpenceEvent expenceEvent;
 

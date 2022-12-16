@@ -22,6 +22,7 @@ import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorageR
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageRepository;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierRepository;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierService;
+import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRelation;
 import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRepository;
 import com.acorp.ventimetriquadri.app.relations.event_workstation.EventWorkstationRepository;
 import com.acorp.ventimetriquadri.app.relations.storage_product.R_StorageProduct;
@@ -132,32 +133,6 @@ class IntegrationTest {
     }
 
     @Test
-    public void test_user_create_find_update_delete() {
-
-        UserEntity userEntity = getUserEntityBody();
-
-        UserEntity userEntity1 = userService.addNewUser(userEntity);
-
-        UserEntity byEmail = userService.findByEmail("amati.angelo90");
-        assertEquals(byEmail.getEmail(), "amati.angelo90");
-        assertEquals(byEmail.getPhone(), "3454937047");
-        assertEquals(userEntity, userEntity1);
-
-        byEmail.setPhone("123123");
-        userService.update(byEmail);
-
-        UserEntity byEmailUpdated = userService.findByEmail("amati.angelo90");
-
-        assertEquals(byEmailUpdated.getEmail(), "amati.angelo90");
-        assertEquals(byEmailUpdated.getPhone(), "123123");
-
-        userService.delete(byEmailUpdated);
-
-        UserEntity byEmailAfterDelete = userService.findByEmail("amati.angelo90");
-        assertNull(byEmailAfterDelete);
-    }
-
-    @Test
     public void test_branch_create_delete_update_search() throws JsonProcessingException {
 
         // creo e salvo un utente
@@ -187,7 +162,7 @@ class IntegrationTest {
         assertEquals(supplierSaved.getAddress(), "Via dalle palle 98");
 
         //creo 20 prodotti da associare al fornitore(supplier) sul quale sto lavorando
-        List<Product> buildProductList = retriveProductList(supplier.getSupplierId(), 15);
+        List<Product> buildProductList = retriveProductList(supplier.getSupplierId(), 3);
 
         for(Product product : buildProductList){
             productService.saveProduct(product);
@@ -195,7 +170,7 @@ class IntegrationTest {
 
         //TEST - salvo e controllo che ad una successiva ricerca di prodotti per SupplierID il numero dei prodotti sia corrispndente a quello salvato
         List<Product> allBySupplierId = productService.findAllBySupplierId(supplierSaved.getSupplierId());
-        assertEquals(allBySupplierId.size(), 15);
+        assertEquals(allBySupplierId.size(), 3);
 
         List<Product> prodListWithFakeSupplierId = productService.findAllBySupplierId(62354);
         assertEquals(prodListWithFakeSupplierId.size(), 0);
@@ -206,25 +181,24 @@ class IntegrationTest {
 
         List<Branch> br = userService.retrieveAllBranchesByUserId(userEntity1.getUserId());
         assertEquals(br.get(0).getSuppliers().size(), 1);
-        assertEquals(br.get(0).getSuppliers().get(0).getProductList().size(), 15);
+        assertEquals(br.get(0).getSuppliers().get(0).getProductList().size(), 3);
         assertEquals(br.get(0).getStorages().size(), 1);
         assertEquals(br.get(0).getStorages().get(0).getProducts().size(), 0);
         assertEquals(br.get(0).getStorages().get(0).getName(), "Magazzino 1");
 
 
+        storageService.insertProductIntoStorage(storageSaved.getStorageId(), (br.get(0).getSuppliers().get(0).getProductList().get(0).getProductId()));
         storageService.insertProductIntoStorage(storageSaved.getStorageId(), (br.get(0).getSuppliers().get(0).getProductList().get(1).getProductId()));
-        storageService.insertProductIntoStorage(storageSaved.getStorageId(), (br.get(0).getSuppliers().get(0).getProductList().get(4).getProductId()));
-        storageService.insertProductIntoStorage(storageSaved.getStorageId(), (br.get(0).getSuppliers().get(0).getProductList().get(7).getProductId()));
-        storageService.insertProductIntoStorage(storageSaved.getStorageId(), (br.get(0).getSuppliers().get(0).getProductList().get(9).getProductId()));
+        storageService.insertProductIntoStorage(storageSaved.getStorageId(), (br.get(0).getSuppliers().get(0).getProductList().get(2).getProductId()));
 
         br = userService.retrieveAllBranchesByUserId(userEntity1.getUserId());
-        System.out.println("Outpur total: " + Utils.jsonFormat(br));
+//        System.out.println("Outpur total: " + Utils.jsonFormat(br));
 
         Storage currentStorage = br.get(0).getStorages().get(0);
         R_StorageProduct r_storageProduct = br.get(0).getStorages().get(0).getProducts().get(1);
 
         assertEquals(currentStorage.getName(), "Magazzino 1");
-        assertEquals(r_storageProduct.getProductName(), "Name prodotto 4");
+        assertEquals(r_storageProduct.getProductName(), "Name prodotto 1");
         assertEquals(r_storageProduct.getStock(), 0.0);
         assertEquals(r_storageProduct.getAmountHundred(), 0.0);
 
@@ -256,16 +230,28 @@ class IntegrationTest {
             eventService.createWorkstation(workstation);
         }
 
-//        eventService.closeEvent(eventSaved);
+
         List<Branch> brAfterUpdate = userService.retrieveAllBranchesByUserId(userEntity1.getUserId());
-        System.out.println("Output total: " + Utils.jsonFormat(brAfterUpdate));
+
+        assertEquals(1, brAfterUpdate.get(0).getEvents().size());
+
+        assertEquals(5, eventExpenceRepository.findAll().size());
+        assertEquals(5, expenceRepository.findAll().size());
+
+        eventService.deleteEventExpence(brAfterUpdate.get(0).getEvents().get(0).getExpenceEvents().get(0));
+
+        assertEquals(4, eventExpenceRepository.findAll().size());
+        assertEquals(4, expenceRepository.findAll().size());
+
+        brAfterUpdate = userService.retrieveAllBranchesByUserId(userEntity1.getUserId());
+//        eventService.closeEvent(eventSaved);
+        System.out.println("Output total after edit: " + Utils.jsonFormat(brAfterUpdate));
     }
 
     private List<Workstation> createWorkstationList(long eventId, int num) {
 
         List<Workstation> workstations = new ArrayList<>();
         for(int i = 0; i < num; i++){
-
             workstations.add(Workstation.builder()
                     .name(randomEnum(WorkstationType.class).name() + " " + i)
                     .workstationType(randomEnum(WorkstationType.class))
@@ -274,7 +260,6 @@ class IntegrationTest {
                     .eventId(eventId)
                     .build());
         }
-
         return workstations;
     }
 
