@@ -21,11 +21,6 @@ public class BranchController {
         return branchService.findAll();
     }
 
-//    @GetMapping(path = "/retrievebranchbyuserid")
-//    public List<Branch> retrieveByUserId(@RequestParam("userid") long userId){
-//        return branchService.findAllBranchesByUserId(userId);
-//    }
-
     @PostMapping(path = "/save")
     public void save(Branch branch) { branchService.addNewBranch(branch); }
 
@@ -33,6 +28,12 @@ public class BranchController {
     public void delete(Branch branch){
         branchService.delete(branch);
     }
+
+    @PutMapping(path = "/createbranchsupplierrelation")
+    public void update(@RequestParam long branchId, @RequestParam long supplierId ){
+        branchService.createBranchSupplierRelation(branchId, supplierId);
+    }
+
 
     @PutMapping(path = "/update")
     public void update(Branch branch){

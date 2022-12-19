@@ -39,7 +39,7 @@ public class BranchEventStorage implements Serializable {
     private Branch branch;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="event_id")
+    @JoinColumn(name="event_id", unique = true)
     private Event event;
 
     @ManyToOne(fetch=FetchType.LAZY)

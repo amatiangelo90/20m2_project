@@ -44,4 +44,6 @@ public class StorageController {
         storageService.removeProductFromStorage(storageId, productId);
     }
 
+
+
 }

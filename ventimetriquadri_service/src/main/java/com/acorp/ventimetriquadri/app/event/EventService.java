@@ -7,7 +7,7 @@ import com.acorp.ventimetriquadri.app.event.expences.ExpenceEvent;
 import com.acorp.ventimetriquadri.app.event.expences.ExpenceRepository;
 import com.acorp.ventimetriquadri.app.event.utils.EventStatus;
 import com.acorp.ventimetriquadri.app.event.workstations.Workstation;
-import com.acorp.ventimetriquadri.app.event.workstations.WorkstationRepository;
+import com.acorp.ventimetriquadri.app.event.workstations.WorkstationService;
 import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorage;
 import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorageRepository;
 import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRelation;
@@ -52,13 +52,10 @@ public class EventService {
     private BranchRepository branchRepository;
 
     @Autowired
-    private WorkstationRepository workstationRepository;
-
-    @Autowired
     private EventWorkstationRepository eventWorkstationRepository;
 
-
-
+    @Autowired
+    private WorkstationService workstationService;
 
     @Transactional
     public Event createEvent(Event event) {
@@ -97,7 +94,7 @@ public class EventService {
         }
         logger.info("Creazione della workstation " + workstation.toString() + " . Associata all'evento con id " + workstation.getEventId());
 
-        Workstation savedWorkstation = workstationRepository.save(workstation);
+        Workstation savedWorkstation = workstationService.createWorkstation(workstation);
 
         eventWorkstationRepository.save(
                 EventWorkstationRelation
@@ -110,8 +107,26 @@ public class EventService {
     }
 
 
-    public void deleteExpence(Event event){
-        eventRepository.deleteById(event.getEventId());
+    @Transactional
+    public void deleteEvent(long eventId){
+        logger.info("Eliminazione dell'evento con id " + eventId + " in corso..");
+        Optional<Event> eventToDelete = eventRepository.findById(eventId);
+
+        if(eventToDelete.isPresent()){
+
+            List<Workstation> workstationsToDeleteList = eventWorkstationRepository.findAllWorkstationsByEvent(eventToDelete.get());
+            for(Workstation workstation : workstationsToDeleteList){
+                workstationService.removeWorkstation(workstation.getWorkstationId());
+            }
+
+            eventExpenceRepository.removeByEvent(Event.builder().eventId(eventId).build());
+            expenceRepository.removeByEventId(eventId);
+
+            branchEventStorageRepository.deleteByEvent(Event.builder().eventId(eventId).build());
+            eventRepository.deleteById(eventId);
+        }else{
+            logger.info("L'evento con id " + eventId + " risulta già rimosso");
+        }
     }
 
     @Transactional
@@ -147,7 +162,7 @@ public class EventService {
         return findEventsByBranchIdWithEventState(branchId, EventStatus.APERTO);
     }
 
-    public List<Event> findEventsClosedByBranchId(long branchId) {
+    public List<Event> findClosedEventByBranchId(long branchId) {
         return findEventsByBranchIdWithEventState(branchId, EventStatus.CHIUSO);
     }
 
@@ -186,6 +201,10 @@ public class EventService {
         if(eventOpt.isPresent()){
             eventOpt.get().setEventStatus(EventStatus.CHIUSO);
 
+            // TODO : riportare la giacenza residua dei prodotti nel magazzino di riferimento
+
+
+
         }else{
             throw new IllegalArgumentException("Errore - Impossibile chiudere l'evento " + event.toString() +". Non è stato possibile recuperare le informazioni tramite l'id evento " + event.getEventId());
         }
@@ -194,7 +213,7 @@ public class EventService {
 
     // EXPENCE SERVICES
 
-    public void deleteExpence(ExpenceEvent expenceEvent){
+    public void deleteEvent(ExpenceEvent expenceEvent){
         expenceRepository.deleteById(expenceEvent.getExpenceId());
     }
 

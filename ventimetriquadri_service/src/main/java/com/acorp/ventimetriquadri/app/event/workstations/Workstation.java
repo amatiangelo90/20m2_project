@@ -2,6 +2,7 @@ package com.acorp.ventimetriquadri.app.event.workstations;
 
 import com.acorp.ventimetriquadri.app.event.utils.WorkstationStatus;
 import com.acorp.ventimetriquadri.app.event.utils.WorkstationType;
+import com.acorp.ventimetriquadri.app.relations.workstation_product.R_WorkstationProduct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "Workstation")
 @Table(name = "WORKSTATION",
@@ -44,6 +47,9 @@ public class Workstation {
 
     @Enumerated
     private WorkstationStatus workstationStatus;
+
+    @Transient
+    private List<R_WorkstationProduct> products = new ArrayList<>();
 
     @JsonIgnore
     private long eventId;

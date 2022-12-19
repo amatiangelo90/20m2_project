@@ -29,7 +29,7 @@ public class ProductService {
     public void saveProduct(Product product) {
 
         if(product.getSupplierId() == 0){
-            throw new IllegalArgumentException("Error - Cannot save product if supplier id is not provided. Impossible to create relation");
+            throw new IllegalArgumentException("Error - Cannot saveBranchSupplier product if supplier id is not provided. Impossible to create relation");
         }
         Product prodSaved = productRepository.save(product);
         supplierProductRepository.save(

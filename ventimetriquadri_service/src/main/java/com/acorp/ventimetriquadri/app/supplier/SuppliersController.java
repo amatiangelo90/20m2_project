@@ -41,4 +41,5 @@ public class SuppliersController {
     public void update(Supplier supplier){
         suppliersService.update(supplier);
     }
+
 }

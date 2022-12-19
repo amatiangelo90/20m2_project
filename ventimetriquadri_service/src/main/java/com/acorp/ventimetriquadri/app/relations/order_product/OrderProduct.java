@@ -1,6 +1,6 @@
-package com.acorp.ventimetriquadri.app.relations.storage_product;
+package com.acorp.ventimetriquadri.app.relations.order_product;
 
-import com.acorp.ventimetriquadri.app.product.Product;
+import com.acorp.ventimetriquadri.app.order.OrderEntity;
 import com.acorp.ventimetriquadri.app.product.product_utils.UnitMeasure;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,45 +11,45 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "StorageProduct")
-@Table(name = "STORAGE_PRODUCT", uniqueConstraints=
-    @UniqueConstraint(columnNames={"product_id", "storage_id"}))
+@Entity(name = "OrderProduct")
+@Table(name = "ORDER_PRODUCT", uniqueConstraints=
+@UniqueConstraint(columnNames={"product_id", "order_entity_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class StorageProduct {
+public class OrderProduct {
 
     @Id
     @SequenceGenerator(
-            name = "storage_product_id",
-            sequenceName = "storage_product_id",
+            name = "order_product_id",
+            sequenceName = "order_product_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "storage_product_id"
+            generator = "order_product_id"
     )
     @Column(
-            name = "storage_product_id",
+            name = "order_product_id",
             updatable = false
     )
-    private long storageProductId;
+    private long orderProductId;
 
     private String productName;
-    private double stock;
     private UnitMeasure unitMeasure;
-    private double amountHundred;
-    private boolean isAvailable;
     @Column(
             name = "product_id",
             updatable = false
     )
     private long productId;
+    private double price;
+    private double amount;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="storage_id")
+    @JoinColumn(name="order_entity_id")
     @JsonIgnore
-    private Storage storage;
+    private OrderEntity order;
+
 
 }

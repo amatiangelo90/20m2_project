@@ -35,37 +35,34 @@ public class Scheduler {
     private PienissimoClient pienissimoClient;
 
     @Autowired
-    private CustomerAccessService customerAccessService;
-
-    @Autowired
     private CustomerService customerService;
 
     @Scheduled(cron = "0 45 22 * * *")
     public void migrateCustomerDataToPienissimoServer() {
 
         Instant now = Instant.now();
-        Instant yesterdayInst = now.minus(1, ChronoUnit.DAYS);
+//        Instant yesterdayInst = now.minus(1, ChronoUnit.DAYS);
 
-        String yesterdayString = Utils.globalDTFormat.format(Date.from(yesterdayInst));
-        logger.info("20m2 - Migrate customers data to Pienissimo server. Exporting data registered on date: " + yesterdayString);
-        List<Customer> customers = customerService.findAllByDate(yesterdayString);
+        String nowString = Utils.globalDTFormat.format(Date.from(now));
+        logger.info("20m2 - Migrate customers data to Pienissimo server. Exporting data registered on date: " + nowString);
+        List<Customer> customers = customerService.findAllByDate(nowString);
 
 
 
         if(customers.size() == 0){
-            logger.info("No record found on CustomerAccess table for current date [" + yesterdayString + "]");
+            logger.info("No record found on CustomerAccess table for current date [" + nowString + "]");
         }else{
 
             List<PienissimoEntity> cisternino = new ArrayList<>();
             List<PienissimoEntity> locorotondo = new ArrayList<>();
             List<PienissimoEntity> monopoli = new ArrayList<>();
 
-            logger.info("Found for current date [" + yesterdayString + "] " + customers.size() + " records. Start migrating...");
+            logger.info("Found for current date [" + nowString + "] " + customers.size() + " records. Start migrating...");
 
             for(Customer customer : customers){
                 logger.info("Current customer to migrate: " + customer.toString());
                 for(CustomerAccess customerAccess : customer.getAccessesList()){
-                    if(customerAccess.getAccessDate().equalsIgnoreCase(yesterdayString)){
+                    if(customerAccess.getAccessDate().equalsIgnoreCase(nowString)){
 
                         if(customerAccess.getBranchLocation() == BranchLocation.CISTERNINO){
                             cisternino.add(PienissimoEntity

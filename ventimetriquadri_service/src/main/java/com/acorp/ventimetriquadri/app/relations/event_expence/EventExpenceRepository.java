@@ -18,4 +18,8 @@ public interface EventExpenceRepository extends JpaRepository<EventExpenceRelati
     @Modifying
     @Query("DELETE FROM EventExpenceRelation eer WHERE eer.eventExpenceId = ?1")
     void deleteByExpenceId(long expenceId);
+
+    @Modifying
+    @Query("DELETE FROM EventExpenceRelation eer WHERE eer.event = ?1")
+    void removeByEvent(Event event);
 }

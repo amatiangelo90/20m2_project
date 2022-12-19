@@ -18,9 +18,14 @@ public class EventController {
     private EventService eventService;
 
 
-    @GetMapping(path = "/findbybranchid")
+    @GetMapping(path = "/findeventbybranchid/open")
     public List<Event> retrieveEventsByBranchId(@RequestParam("branchid") long branchId){
         return eventService.findOpenEventsByBranchId(branchId);
+    }
+
+    @GetMapping(path = "/findeventbybranchid/closed")
+    public List<Event> retrieveEventsClosedByBranchId(@RequestParam("branchid") long branchId){
+        return eventService.findClosedEventByBranchId(branchId);
     }
 
     @PostMapping(path = "/save")
@@ -29,8 +34,8 @@ public class EventController {
     }
 
     @DeleteMapping(path = "/delete")
-    public void delete(Event event){
-        eventService.deleteExpence(event);
+    public void delete(@RequestParam("eventId") long eventId){
+        eventService.deleteEvent(eventId);
     }
 
     @PutMapping(path = "/update")
@@ -45,6 +50,12 @@ public class EventController {
         return eventService.createWorkstation(workstation);
     }
 
+    @PostMapping(path = "/workstation/addproduct")
+    public Workstation addProductToWorkstation(Workstation workstation){
+        return eventService.createWorkstation(workstation);
+    }
+
+
     // EXPENCE RESOURCES
     @GetMapping(path = "/expence/retrievebyeventid")
     public List<ExpenceEvent> retrieveAllExpenpencesByEventId(@RequestParam("eventid") long eventId){
@@ -58,7 +69,7 @@ public class EventController {
 
     @DeleteMapping(path = "expence/delete")
     public void deleteExpence(ExpenceEvent expenceEvent){
-        eventService.deleteExpence(expenceEvent);
+        eventService.deleteEvent(expenceEvent);
     }
 
     @PutMapping(path = "expence/update")

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.acorp.ventimetriquadri.app.relations.storage_product.R_StorageProduct.r_storageProductFromStorageProd;
+
 @Service
 @AllArgsConstructor
 public class StorageService {
@@ -46,34 +48,29 @@ public class StorageService {
 
             List<StorageProduct> storageProducts = retrieveAllProductByStorage(storage);
             if(!storageProducts.isEmpty()) {
+
                 List<R_StorageProduct> r_storageProducts = parseStorageProductsList(storageProducts);
-                storage.getProducts()
-                        .addAll(r_storageProducts);
+
+                storage.getProducts().addAll(r_storageProducts);
             }
         }
         return storages;
     }
 
     private List<R_StorageProduct> parseStorageProductsList(List<StorageProduct> storageProducts) {
-
         List<R_StorageProduct> r_storageProducts = new ArrayList<>();
         for(StorageProduct storageProduct : storageProducts){
-            r_storageProducts.add(R_StorageProduct.builder()
-                    .amountHundred(storageProduct.getAmountHundred())
-                    .isAvailable(storageProduct.isAvailable())
-                    .productName(storageProduct.getProductName())
-                    .productId(storageProduct.getProductId())
-                    .storageProductId(storageProduct.getStorageProductId())
-                    .stock(storageProduct.getStock())
-                    .stock(storageProduct.getStock())
-                    .build());
+            r_storageProducts.add(r_storageProductFromStorageProd(storageProduct));
         }
         return r_storageProducts;
     }
 
+
+
     public void save(BranchStorage branchStorage) {
         branchStorageRepository.save(branchStorage);
     }
+
 
     public void insertProductIntoStorage(long storageId, long productId) {
 
@@ -89,6 +86,7 @@ public class StorageService {
                         .amountHundred(0.0)
                         .isAvailable(true)
                         .stock(0.0)
+                        .unitMeasure(product.get().getUnitMeasure())
                         .productId(product.get().getProductId())
                         .productName(product.get().getName())
                         .storage(Storage.builder().storageId(storageId).build())
@@ -98,6 +96,10 @@ public class StorageService {
             }
 
         }
+    }
+
+    public void editProductIntoStorage(){
+
     }
 
     public List<StorageProduct> retrieveAllProductByStorage(Storage storage) {
@@ -153,17 +155,23 @@ public class StorageService {
 
 
     @Transactional
-    public void updateRStorageProduct(R_StorageProduct r_storageProduct) {
-        if(r_storageProduct.getStorageProductId() == 0){
-            throw new IllegalArgumentException("Error - Cannot update Product into the storage. Product Id is null or 0");
+    public void addStockAmountToStorageProduct(long storageProductId, double amountToAdd) {
+        if(storageProductId == 0){
+            throw new IllegalArgumentException("Error - Cannot update Product into the storage. Product Id is NULL or 0");
         }
-
-        Optional<StorageProduct> storageProductById = storageProductRepository.findById(r_storageProduct.getStorageProductId());
-
-        storageProductById.get().setAmountHundred(r_storageProduct.getAmountHundred());
-        storageProductById.get().setAvailable(r_storageProduct.isAvailable());
-        storageProductById.get().setStock(r_storageProduct.getStock());
+        Optional<StorageProduct> storageProductById = storageProductRepository.findById(storageProductId);
+        storageProductById.get().setStock(storageProductById.get().getStock() + amountToAdd);
     }
+
+    @Transactional
+    public void removeStockAmountFromStorageProduct(long storageProductIt, double amountToRemove) {
+        if(storageProductIt == 0){
+            throw new IllegalArgumentException("Error - Cannot update Product into the storage. Product Id is NULL or 0");
+        }
+        Optional<StorageProduct> storageProductById = storageProductRepository.findById(storageProductIt);
+        storageProductById.get().setStock(storageProductById.get().getStock() - amountToRemove);
+    }
+
 
     public void removeProductFromStorage(long storageId, long productId) {
         storageProductRepository.delete(StorageProduct
@@ -171,5 +179,9 @@ public class StorageService {
                 .productId(productId)
                 .storage(Storage.builder().storageId(storageId).build())
                 .build());
+    }
+
+    public Optional<Storage> findStorageByStorageId(long storageId) {
+        return storageRepository.findById(storageId);
     }
 }

@@ -1,6 +1,7 @@
 package com.acorp.ventimetriquadri.app.branch;
 
 import com.acorp.ventimetriquadri.app.event.Event;
+import com.acorp.ventimetriquadri.app.order.OrderEntity;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import lombok.AllArgsConstructor;
@@ -61,6 +62,9 @@ public class Branch implements Serializable {
 
     @Transient
     private List<Event> events;
+
+    @Transient
+    private List<OrderEntity> orders;
 
     @Transient
     private String token;

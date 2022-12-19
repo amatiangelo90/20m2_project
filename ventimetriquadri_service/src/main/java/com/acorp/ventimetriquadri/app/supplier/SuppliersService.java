@@ -3,9 +3,6 @@ package com.acorp.ventimetriquadri.app.supplier;
 import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplier;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierRepository;
-import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierService;
-import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
-import com.acorp.ventimetriquadri.exception.VentiMetriQuadriCustomException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,17 +20,14 @@ public class SuppliersService {
     private SupplierRepository supplierRepository;
 
     @Autowired
-    private BranchSupplierService branchSupplierService;
-
-
-
+    private BranchSupplierRepository branchSupplierRepository;
 
     @Transactional
     public Supplier saveSupplier(Supplier supplier) {
 
         try{
             Supplier supplierdSaved = supplierRepository.save(supplier);
-            branchSupplierService.save(
+            branchSupplierRepository.save(
                     BranchSupplier.builder()
                             .branch(Branch.builder().branchId(supplier.getBranchId()).build())
                             .supplier(supplierdSaved)
@@ -89,4 +83,9 @@ public class SuppliersService {
     }
 
 
+    public Optional<Supplier> findSupplierById(long supplierId) {
+        return supplierRepository.findById(supplierId);
+
+
+    }
 }
