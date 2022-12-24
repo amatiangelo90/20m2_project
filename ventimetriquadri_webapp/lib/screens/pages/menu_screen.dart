@@ -1,8 +1,12 @@
+import 'dart:math';
+
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../databundle/branch.dart';
+import 'package:ventimetriquadri/output/swagger.swagger.dart';
 import '../../databundle/data_bundle_notifier.dart';
 import '../../menu/pdf_viewer.dart';
+import '../../output/swagger.enums.swagger.dart';
 
 class MenuScreen extends StatefulWidget {
   static String id = 'menudetails';
@@ -14,6 +18,15 @@ class _MenuScreenState extends State<MenuScreen> {
 
   late double height;
   late double width;
+
+  Random rnd = Random();
+
+  List<String> listFoodPhotos = [
+    "images/photos/polpo.jpg",
+    "images/photos/panino20m2.jpg",
+    "images/photos/image_2.jpeg",
+    "images/photos/image_4.jpeg",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +42,7 @@ class _MenuScreenState extends State<MenuScreen> {
           return Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios),
+                icon: const Icon(Icons.arrow_back_ios),
                 onPressed: (){
                   Navigator.of(context).pop();
                 },
@@ -42,15 +55,24 @@ class _MenuScreenState extends State<MenuScreen> {
             body: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.hardLight),
-                  image: const AssetImage("images/20m2.png"),
+                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.8), BlendMode.hardLight),
+                  image: AssetImage(listFoodPhotos[rnd.nextInt(3 - 0)]),
                   fit: BoxFit.cover,
                 ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  const SizedBox(height: 180),
+                  Card(
+                    color: Colors.black.withOpacity(0.5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(28.0),
+                      child: Text('Ciao ${bundleNotifier.currentUser!.name},\n\n Consulta uno dei nostri menu e buon appetito! 😊',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontWeight: FontWeight.bold, color:
+                          Colors.white, fontSize: 18, fontFamily: 'Dance')),
+                    ),
+                  ),
                   Center(
                     child: Column(
                       children: [
@@ -61,13 +83,11 @@ class _MenuScreenState extends State<MenuScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 105),
                   Column(
                     children: [
-                      buildButton('MENU\' CISTERNINO', bundleNotifier, Branch20m2.CISTERNINO),
-                      buildButton('MENU\' LOCOROTONDO', bundleNotifier, Branch20m2.LOCOROTONDO),
-                      buildButton('MENU\' MONOPOLI', bundleNotifier, Branch20m2.MONOPOLI),
-
+                      buildButton('MENU\' CISTERNINO', bundleNotifier, CustomerAccessBranchLocation.cisternino),
+                      buildButton('MENU\' LOCOROTONDO', bundleNotifier, CustomerAccessBranchLocation.locorotondo),
+                      buildButton('MENU\' MONOPOLI', bundleNotifier, CustomerAccessBranchLocation.monopoli),
                     ],
                   ),
                 ],
@@ -80,15 +100,29 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   buildButton(String s, DataBundleNotifier bundleNotifier,
-      Branch20m2 branch) {
+    CustomerAccessBranchLocation branch) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: SizedBox(
         width: width - 30,
         height: 60,
 
-        child: ElevatedButton(onPressed: (){
+        child: ElevatedButton(onPressed: () async {
           bundleNotifier.setCurrentBranch(branch);
+
+          print('Save client access ${bundleNotifier.currentCustomerId} date ${bundleNotifier.getCurrentDateInFormat()} branch ' + branch.toString());
+          try {
+            Response apiV1WebsiteCustomeraccessSavePost = await bundleNotifier.getSwaggerClient().apiV1WebsiteCustomeraccessSavePost(
+                customerId: bundleNotifier.currentCustomerId,
+                accessDate: bundleNotifier.getCurrentDateInFormat(),
+                customerAccessId: 0,
+                branchLocation: customerAccessBranchLocationToJson(branch));
+
+            print(apiV1WebsiteCustomeraccessSavePost.error);
+          } catch (e) {
+            print(e.toString());
+          }
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -96,7 +130,7 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           );
         },style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.transparent),
+            backgroundColor: MaterialStateProperty.resolveWith((states) => Color(0xff121212)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),

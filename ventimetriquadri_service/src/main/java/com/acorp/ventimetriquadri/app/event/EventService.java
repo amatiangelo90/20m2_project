@@ -167,7 +167,7 @@ public class EventService {
     }
 
     private List<Event> findEventsByBranchIdWithEventState(long branchId, EventStatus status) {
-        logger.info("Ricerca eventi per branch con id [" + branchId + "] e stato evento" + status.name());
+        logger.info("Ricerca eventi per branch con id [" + branchId + "] e stato evento " + status.name());
         List<Event> events = new ArrayList<>();
 
         List<BranchEventStorage> allByBranchId = branchEventStorageRepository.findByBranchId(Branch.builder().branchId(branchId).build());

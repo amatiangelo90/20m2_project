@@ -15,7 +15,6 @@ import com.acorp.ventimetriquadri.external_integration.email_service.EmailEngine
 import com.acorp.ventimetriquadri.external_integration.email_service.EmailEntity;
 import com.acorp.ventimetriquadri.external_integration.email_service.EmailSenderException;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,16 +46,16 @@ public class OrderService {
 
 
     @Transactional
-    public OrderEntity sendOrder(OrderEntity orderEntity) throws CustomException {
+    public OrderEntity sendOrder(OrderEntity orderEntity, List<R_OrderProduct> r_orderProductList) throws CustomException {
         Optional<Supplier> supplierById = suppliersService.findSupplierById(orderEntity.getSupplierId());
         Optional<Branch> branch = branchService.findByBranchId(orderEntity.getBranchId());
         Optional<Storage> storage = storageService.findStorageByStorageId(orderEntity.getStorageId());
 
-        validateRequest(supplierById, branch, storage, orderEntity);
+        validateRequest(supplierById, branch, storage, orderEntity, r_orderProductList);
 
         OrderEntity orderSaved = orderRepository.save(orderEntity);
 
-        for(R_OrderProduct r_orderProduct : orderEntity.getProducts()){
+        for(R_OrderProduct r_orderProduct : r_orderProductList){
             orderProductRepository.save(OrderProduct
                     .builder()
                     .amount(r_orderProduct.getAmount())
@@ -102,7 +101,11 @@ public class OrderService {
         return null;
     }
 
-    private void validateRequest(Optional<Supplier> supplier, Optional<Branch> branch, Optional<Storage> storage, OrderEntity orderEntity) throws CustomException {
+    private void validateRequest(Optional<Supplier> supplier,
+                                 Optional<Branch> branch,
+                                 Optional<Storage> storage,
+                                 OrderEntity orderEntity,
+                                 List<R_OrderProduct> r_orderProductList) throws CustomException {
         if(!supplier.isPresent()){
             throw new CustomException("Error - Impossibile creare ordine. Nessun fornitore trovato per l'id [" + orderEntity.getSupplierId() + "]");
         }
@@ -119,7 +122,7 @@ public class OrderService {
             throw new CustomException("Error - Impossibile creare ordine. Request is NULL");
         }
 
-        if(orderEntity.getProducts() == null || orderEntity.getProducts().isEmpty()){
+        if(r_orderProductList == null || r_orderProductList.isEmpty()){
             throw new CustomException("Error - Impossibile creare ordine. La lista prodotti è vuota");
         }
     }

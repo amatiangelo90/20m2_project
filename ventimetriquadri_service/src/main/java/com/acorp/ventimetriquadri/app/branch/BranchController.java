@@ -1,5 +1,6 @@
 package com.acorp.ventimetriquadri.app.branch;
 
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserPriviledge;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class BranchController {
     }
 
     @PutMapping(path = "/createbranchsupplierrelation")
-    public void update(@RequestParam long branchId, @RequestParam long supplierId ){
+    public void createBranchSupplierRelation(@RequestParam long branchId, @RequestParam long supplierId ){
         branchService.createBranchSupplierRelation(branchId, supplierId);
     }
 
@@ -38,6 +39,21 @@ public class BranchController {
     @PutMapping(path = "/update")
     public void update(Branch branch){
         branchService.update(branch);
+    }
+
+    @GetMapping(path = "/retrievebranchbyid")
+    public Branch retrieveByBranchId(@RequestParam("branchid") long branchId){
+        return branchService.retrieveByBranchId(branchId);
+    }
+
+    @GetMapping(path = "/retrievebranchbycode")
+    public Branch retrieveByBranchCode(@RequestParam("branchcode") String branchCode){
+        return branchService.retrieveByBranchCode(branchCode);
+    }
+
+    @GetMapping(path = "/linkbranchanduser")
+    public void linkBranchAndUser(long branchId, long userId, String userPriviledge) {
+        branchService.linkUserBranchId(branchId, userId, userPriviledge);
     }
 
     @GetMapping(path = "/retrievesuppliersbybranchid")

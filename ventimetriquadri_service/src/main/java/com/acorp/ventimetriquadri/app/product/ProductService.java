@@ -1,9 +1,13 @@
 package com.acorp.ventimetriquadri.app.product;
 
+import com.acorp.ventimetriquadri.app.event.EventService;
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProduct;
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
+import com.acorp.ventimetriquadri.utils.Utils;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,8 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProductService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private ProductRepository productRepository;
@@ -28,6 +34,7 @@ public class ProductService {
     @Transactional
     public void saveProduct(Product product) {
 
+        logger.info("Save product " + Utils.jsonFormat(product));
         if(product.getSupplierId() == 0){
             throw new IllegalArgumentException("Error - Cannot saveBranchSupplier product if supplier id is not provided. Impossible to create relation");
         }

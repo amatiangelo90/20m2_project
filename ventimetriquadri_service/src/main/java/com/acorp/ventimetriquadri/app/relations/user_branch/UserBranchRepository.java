@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserBranchRepository extends JpaRepository<UserBranch, Long> {
 
     @Query("SELECT ub FROM UserBranch ub WHERE ub.userEntity = ?1")
-    List<UserBranch> retrieveBranchesByUserId(UserEntity user);
+    Optional<List<UserBranch>> retrieveBranchesByUserId(UserEntity user);
 }

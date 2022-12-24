@@ -1,13 +1,13 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_holo_date_picker/date_picker_theme.dart';
-import 'package:flutter_holo_date_picker/i18n/date_picker_i18n.dart';
-import 'package:flutter_holo_date_picker/widget/date_picker_widget.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ventimetriquadri/databundle/data_bundle_notifier.dart';
-import 'package:ventimetriquadri/output/swagger.swagger.dart';
 import 'package:ventimetriquadri/screens/pages/menu_screen.dart';
+
+import '../../output/swagger.models.swagger.dart';
 
 
 class RegistrationPage extends StatefulWidget {
@@ -20,10 +20,17 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
+  DateTime selectedDate = DateTime(1992);
+
 
   @override
   Widget build(BuildContext context) {
+
+    double width = MediaQuery.of(context).size.width;
+
+
     return Consumer<DataBundleNotifier>(
+
       builder: (child, dataBundleNotifier, _){
         return GestureDetector(
           onTap: (){
@@ -82,13 +89,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ) : const Text(''),
                       Row(
                         children: [
-                          Text(
-                            ' +39  ' , style: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontFamily: 'Dance',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 19
-                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 2, bottom: 20),
+                            child: SizedBox(
+                                width: width * 1/11,
+                                child: Text(
+                                  textAlign: TextAlign.center,
+                                  ' +39 ' , style: TextStyle(
+                                    color: Colors.grey.shade700,
+
+                                    fontFamily: 'Dance',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 19
+                                ),
+                                ),),
                           ),
                           Expanded(
                             child: TextFormField(
@@ -101,6 +115,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               ),
                               textInputAction: TextInputAction.next,
                               textCapitalization: TextCapitalization.words,
+                              maxLength: 10,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(
+                                    RegExp(r'\s')),
+                              ],
                               keyboardType: TextInputType.number,
                               onChanged: (phoneNumber) async {
                                 if(phoneNumber.length >= 10){
@@ -109,175 +128,149 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   if(apiV1UserFindallGet.isSuccessful){
                                     if(apiV1UserFindallGet.body != null){
                                       dataBundleNotifier.setCurrentUser(apiV1UserFindallGet.body);
-                                      dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersUpdatePut(
-                                        customerId: dataBundleNotifier.currentUser.customerId!.toInt(),
-                                        phoneNumber: dataBundleNotifier.currentUser.phoneNumber,
-                                        name: dataBundleNotifier.currentUser.name,
-                                        dob: dataBundleNotifier.dob,
-                                        email: dataBundleNotifier.currentUser.email,
-                                        lastname: dataBundleNotifier.currentUser.lastname,
-                                        treatmentPersonalData: dataBundleNotifier.currentUser.treatmentPersonalData,
-                                        accessCounter: dataBundleNotifier.currentUser!.accessCounter! + 1,
-                                      );
                                       FocusManager.instance.primaryFocus?.unfocus();
+                                      Navigator.pushNamed(context, MenuScreen.id);
                                     }
+                                  }else{
+                                    print(apiV1UserFindallGet.error.toString());
                                   }
                                 }
                               },
-                              decoration: const InputDecoration(
-                                  filled: true,
-                                  fillColor: Color(0xfffdfdff),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                    borderSide: BorderSide(color: Colors.grey, width: 1.3),
-                                  ),
-                                  labelText: 'cellulare *',
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                                  ),
-                                  focusColor: Colors.grey,
-                                  border: OutlineInputBorder()),
+                              decoration: getInputDecoration('cellulare *'),
                               controller: dataBundleNotifier.phoneController,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 9,),
-                      TextFormField(
-                        autofillHints: const [AutofillHints.givenName],
-                        style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontFamily: 'Dance',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        onEditingComplete: (){
-                        },
-                        decoration: const InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.3),
-                            ),
-                            labelText: 'nome *',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                            ),
-                            hintStyle: TextStyle(color: Colors.red),
-                            filled: true,
-                            fillColor: Color(0xfffdfdff),
-                            focusColor: Colors.grey,
-                            border: OutlineInputBorder()),
-                        controller: dataBundleNotifier.nameController,
-                      ),
-                      const SizedBox(height: 9,),
-                      TextFormField(
-                        autofillHints: const [AutofillHints.familyName],
-                        style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontFamily: 'Dance',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        onEditingComplete: (){
-                        },
-                        decoration: const InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.3),
-                            ),
-                            labelText: 'cognome *',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                            ),
-                            hintStyle: TextStyle(color: Colors.red),
-                            filled: true,
-                            fillColor: Color(0xfffdfdff),
-                            focusColor: Colors.grey,
-                            border: OutlineInputBorder()),
-                        controller: dataBundleNotifier.lastnameController,
-                      ),
-                      const SizedBox(height: 9,),
-                      TextFormField(
-                        autofillHints: const [AutofillHints.email],
-                        style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontFamily: 'Dance',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
-                        textInputAction: TextInputAction.next,
-                        textCapitalization: TextCapitalization.words,
-                        onEditingComplete: (){
-                        },
-                        decoration: const InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.3),
-                            ),
-                            labelText: 'email',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                            ),
-                            hintStyle: TextStyle(color: Colors.red),
-                            filled: true,
-                            fillColor: Color(0xfffdfdff),
-                            focusColor: Colors.grey,
-                            border: OutlineInputBorder()),
-                        controller: dataBundleNotifier.emailController,
-                      ),
-                      const SizedBox(height: 5,),
-                      Text(' Data di nascita *', style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontFamily: 'Dance',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16
-                      ),),
-                      Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(15.0)
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: width * 1/11,
+                              child: const Icon(Icons.person_outline_rounded, color: Color(0xff121212))),
+                          Expanded(
+                            child: TextFormField(
+                              autofillHints: const [AutofillHints.givenName],
+                              style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Dance',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              textInputAction: TextInputAction.next,
+                              textCapitalization: TextCapitalization.words,
+                              onEditingComplete: (){
+                              },
+                              decoration: getInputDecoration('nome *'),
+                              controller: dataBundleNotifier.nameController,
                             ),
                           ),
-                          child: DatePickerWidget(
-                            looping: false,
-                            firstDate: DateTime(1940),
-                            lastDate: DateTime(2018),
-                            locale: DateTimePickerLocale.it,
-                            dateFormat:
-                            "dd/MMMM/yyyy",
-                            // locale: DatePicker.localeFromString('th'),
-                            onChange: (DateTime newDate, _) {
-                              dataBundleNotifier.setDbo(newDate);
-                            },
-                            pickerTheme: DateTimePickerTheme(
-                              backgroundColor: Colors.transparent,
-                              itemTextStyle:
-                              const TextStyle(color: Colors.black, fontFamily: 'Dance', fontWeight: FontWeight.bold, fontSize: 19),
-                              dividerColor: Colors.grey.shade700,
-                            ),
-                          ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 9,),
-                      Text(
-                        '  campo obbligatorio *' , style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontFamily: 'Dance',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: width * 1/11,
+                              child: const Icon(Icons.person_outline_rounded, color: Color(0xff121212))),
+                          Expanded(
+                            child: TextFormField(
+                              autofillHints: const [AutofillHints.familyName],
+                              style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Dance',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              textInputAction: TextInputAction.next,
+                              textCapitalization: TextCapitalization.words,
+                              onEditingComplete: (){
+                              },
+                              decoration: const InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                    borderSide: BorderSide(color: Colors.grey, width: 1.3),
+                                  ),
+                                  labelText: 'cognome *',
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                                  ),
+                                  hintStyle: TextStyle(color: Colors.red),
+                                  filled: true,
+                                  fillColor: Color(0xfffdfdff),
+                                  focusColor: Colors.grey,
+                                  border: OutlineInputBorder()),
+                              controller: dataBundleNotifier.lastnameController,
+                            ),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 9,),
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: width * 1/11,
+                              child: const Icon(Icons.email_outlined, color: Color(0xff121212))),
+                          Expanded(
+                            child: TextFormField(
+                              autofillHints: const [AutofillHints.email],
+                              style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Dance',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              textInputAction: TextInputAction.next,
+                              textCapitalization: TextCapitalization.words,
+                              onEditingComplete: (){
+                              },
+                              decoration: getInputDecoration('email'),
+                              controller: dataBundleNotifier.emailController,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10,),
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: width * 1/11,
+                              child: const Icon(FontAwesomeIcons.calendar, color: Color(0xff121212))),
+                          Expanded(
+                            child: TextFormField(
+                              style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Dance',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              onTap: (){
+                                FocusScope.of(context).requestFocus(FocusNode());
+                                dataBundleNotifier.selectDate(context);
+                              },
+                              textInputAction: TextInputAction.next,
+                              textCapitalization: TextCapitalization.words,
+                              decoration: getInputDecoration('data di nascita *'),
+                              controller: dataBundleNotifier.dobControoler,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 9,),
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: width * 1/11,),
+                          Text(
+                            '      campo obbligatorio *' , style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontFamily: 'Dance',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11
+                          ),
+                          ),
+                        ],
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 10, left: 10),
@@ -290,60 +283,84 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 value: dataBundleNotifier.checkedValue, onChanged: (val){
                                 dataBundleNotifier.turnCheckedValue();
                               },),
-                              Text(
-                                'Presto il consenso al trattamento dei dati personali',style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontFamily: 'Dance',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12
-                              ),
+                              SizedBox(
+                                width: width * 3/4,
+                                child: Text(
+                                  'Presto il consenso al trattamento dei dati personali',style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontFamily: 'Dance',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12
+                                ),
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      Center(child: Text( dataBundleNotifier.formErrors == 'true' ? dataBundleNotifier.errorFormMessage : '', style: TextStyle(fontFamily: 'Dance', color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),)),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(child: Text( dataBundleNotifier.formErrors == 'true' ? dataBundleNotifier.errorFormMessage : '', style: TextStyle(fontFamily: 'Dance', color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),)),
+                      ),
                       SizedBox(
                         width: 300,
                         height: 50,
 
-                        child: ElevatedButton(onPressed: (){
-
+                        child: ElevatedButton(onPressed: () async {
                           dataBundleNotifier.setErrorFlag('false');
                           dataBundleNotifier.setErrorMessage('');
                           if(dataBundleNotifier.phoneController.text.isEmpty){
                             dataBundleNotifier.setErrorFlag('true');
                             dataBundleNotifier.setErrorMessage('Inserisci il numero di cellulare');
+                          }else if(dataBundleNotifier.phoneController.text.length != 10){
+                            dataBundleNotifier.setErrorFlag('true');
+                            dataBundleNotifier.setErrorMessage('Inserire un numero di cellulare corretto');
+                          }else if(!isPhoneNoValid(dataBundleNotifier.phoneController.text)){
+                            dataBundleNotifier.setErrorFlag('true');
+                            dataBundleNotifier.setErrorMessage('Inserire un numero di cellulare corretto');
                           }else if(dataBundleNotifier.nameController.text.isEmpty){
                             dataBundleNotifier.setErrorFlag('true');
                             dataBundleNotifier.setErrorMessage('Inserisci il nome');
                           }else if(dataBundleNotifier.lastnameController.text.isEmpty){
                             dataBundleNotifier.setErrorFlag('true');
                             dataBundleNotifier.setErrorMessage('Inserisci il cognome');
-                          }else if(dataBundleNotifier.dob == ''){
+                          }else if(dataBundleNotifier.dobControoler.text.isEmpty){
                             dataBundleNotifier.setErrorFlag('true');
                             dataBundleNotifier.setErrorMessage('Inserisci la data di nascita');
                           }
                           else{
                             try{
-                              dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersSavePost(
-                                  name: dataBundleNotifier.nameController.text,
-                                  dob: dataBundleNotifier.dob,
+                              Response apiV1WebsiteCustomersSavePost = await dataBundleNotifier.getSwaggerClient().apiV1WebsiteCustomersSavePost(
+                                name: dataBundleNotifier.nameController.text,
+                                dob: dataBundleNotifier.dobControoler.text,
+                                email: dataBundleNotifier.emailController.text,
+                                lastname: dataBundleNotifier.lastnameController.text,
+                                phone: dataBundleNotifier.phoneController.text,
+                                treatmentPersonalData: dataBundleNotifier.checkedValue,
+                                customerId: 0,
+                              );
+
+                              if(apiV1WebsiteCustomersSavePost.isSuccessful){
+                                dataBundleNotifier.setCurrentCustomerId(apiV1WebsiteCustomersSavePost.body);
+                                dataBundleNotifier.setCurrentUser(Customer(
+                                  customerId: apiV1WebsiteCustomersSavePost.body,
+                                  treatmentPersonalData: dataBundleNotifier.checkedValue,
                                   email: dataBundleNotifier.emailController.text,
                                   lastname: dataBundleNotifier.lastnameController.text,
-                                  phoneNumber: dataBundleNotifier.phoneController.text,
-                                  treatmentPersonalData: dataBundleNotifier.checkedValue,
-                                  customerId: 0,
-                                  accessCounter: 1,
-                                  branch20m2: customersBranch20m2ToJson(CustomersBranch20m2.cisternino),
-                              );
+                                  phone: dataBundleNotifier.phoneController.text,
+                                  dob: dataBundleNotifier.dobControoler.text,
+                                  name: dataBundleNotifier.nameController.text,
+                                  accessesList: []
+
+                                ));
+                              }
                             }catch(e){
                               print(e.toString());
                             }
                             Navigator.pushNamed(context, MenuScreen.id);
                           }
                         },style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.white,),
+                            backgroundColor: MaterialStateProperty.resolveWith((states) => Color(0xff121212),),
                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
@@ -352,7 +369,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             )
                         ), child: Text('ACCEDI AL MENU\'',
                             style: TextStyle(fontWeight: FontWeight.bold, color:
-                            Colors.grey.shade700, fontSize: 18, fontFamily: 'Dance')),),
+                            Colors.white, fontSize: 18, fontFamily: 'Dance')),),
                       ),
                     ],
                   ),
@@ -363,5 +380,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
         );
       },
     );
+  }
+
+  bool isPhoneNoValid(String? phoneNo) {
+    if (phoneNo == null) return false;
+    final regExp = RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+    return regExp.hasMatch(phoneNo);
+  }
+
+  getInputDecoration(String s) {
+    return InputDecoration(
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          borderSide: BorderSide(color: Colors.grey, width: 1.3),
+        ),
+        labelText: s,
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          borderSide: BorderSide(color: Colors.grey, width: 1.0),
+        ),
+        filled: true,
+        fillColor: const Color(0xfffdfdff),
+        focusColor: Colors.grey,
+        border: const OutlineInputBorder());
   }
 }

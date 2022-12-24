@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,6 +110,7 @@ public class StorageService {
     @Transactional
     public Storage saveStorage(Storage storage) {
 
+        storage.setCreationDate(Utils.globalDTFormat.format(new Date()));
         Storage storageSaved = storageRepository.save(storage);
         branchStorageRepository.save(BranchStorage.builder()
                 .storage(storageSaved)

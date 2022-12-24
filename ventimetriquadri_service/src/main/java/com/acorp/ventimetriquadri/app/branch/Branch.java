@@ -2,6 +2,7 @@ package com.acorp.ventimetriquadri.app.branch;
 
 import com.acorp.ventimetriquadri.app.event.Event;
 import com.acorp.ventimetriquadri.app.order.OrderEntity;
+import com.acorp.ventimetriquadri.app.relations.user_branch.UserPriviledge;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.Objects;
 @Entity(name = "Branch")
 @Table(name = "BRANCH",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"branch_id", "name"}))
+        @UniqueConstraint(columnNames={"branch_id", "name", "branchCode"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -37,7 +38,16 @@ public class Branch implements Serializable {
             name = "branch_id",
             updatable = false
     )
+
     private long branchId;
+
+    @Column(
+            name = "branchCode",
+            nullable = false,
+            unique = true,
+            length = 8
+    )
+    private String branchCode;
 
     private String name = "";
     private String email = "";
@@ -68,6 +78,10 @@ public class Branch implements Serializable {
 
     @Transient
     private String token;
+
+    @Transient
+    @Enumerated
+    private UserPriviledge userPriviledge;
 
     @Override
     public boolean equals(Object o) {

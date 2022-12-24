@@ -1,10 +1,13 @@
 package com.acorp.ventimetriquadri.app.user;
 
+import com.acorp.ventimetriquadri.app.branch.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "UserEntity")
 @Table(name = "USER_ENTITY",
@@ -47,5 +50,8 @@ public class UserEntity {
             nullable = false
     )
     private String phone = "";
+
+    @Transient
+    List<Branch> branchList = new ArrayList<>();
 
 }

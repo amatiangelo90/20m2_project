@@ -37,8 +37,16 @@ public class Product implements Serializable {
     )
     private long productId;
     private String name = "";
+    private String code = "";
+
     @Enumerated(EnumType.STRING)
+    @Column(
+            name = "unitMeasure",
+            nullable = false
+    )
     private UnitMeasure unitMeasure;
+
+    private String unitMeasureOTH;
     private int vatApplied = 0;
     private double price = 0;
     private String description = "";
@@ -46,4 +54,5 @@ public class Product implements Serializable {
 
     @JsonIgnore
     private long supplierId;
+
 }

@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface BranchSupplierRepository extends JpaRepository<BranchSupplier, Long> {
 
-    @Query("SELECT brsu.supplier FROM BranchSupplier brsu WHERE brsu.branch = ?1")
-    List<Supplier> findAllSupplierByBranch(Branch branch);
+    @Query("SELECT brsu FROM BranchSupplier brsu WHERE brsu.branch = ?1")
+    List<BranchSupplier> findAllSupplierByBranch(Branch branch);
+
 }

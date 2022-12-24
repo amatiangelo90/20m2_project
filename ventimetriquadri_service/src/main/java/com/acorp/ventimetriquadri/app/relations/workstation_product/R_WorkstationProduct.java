@@ -16,7 +16,7 @@ public class R_WorkstationProduct implements Serializable {
 
     private long workstationProductId;
     private String productName;
-    private UnitMeasure unitMeasure;
+    private String unitMeasure;
     private double stockFromStorage;
     private double consumed;
     private double amountHundred;
@@ -30,7 +30,7 @@ public class R_WorkstationProduct implements Serializable {
                 .consumed(workstationProduct.getConsumed())
                 .productName(workstationProduct.getProductName())
                 .stockFromStorage(workstationProduct.getStockFromStorage())
-                .unitMeasure(workstationProduct.getUnitMeasure())
+                .unitMeasure(workstationProduct.getUnitMeasure().name())
                 .storageId(workstationProduct.getStorageId())
                 .workstationProductId(workstationProduct.getWorkstationProductId())
                 .productId(workstationProduct.getProductId())

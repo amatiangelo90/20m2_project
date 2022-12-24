@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity(name = "UserBranch")
-@Table(name = "UserBranch")
+@Table(name = "USER_BRANCH",
+        uniqueConstraints=
+        @UniqueConstraint(columnNames={"branch_id", "user_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -42,6 +44,9 @@ public class UserBranch {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
     private UserEntity userEntity;
+
+    @Enumerated
+    private UserPriviledge userPriviledge;
 
     private String token;
 

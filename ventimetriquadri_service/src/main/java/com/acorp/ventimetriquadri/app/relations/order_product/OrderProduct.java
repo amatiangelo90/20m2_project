@@ -1,8 +1,6 @@
 package com.acorp.ventimetriquadri.app.relations.order_product;
 
 import com.acorp.ventimetriquadri.app.order.OrderEntity;
-import com.acorp.ventimetriquadri.app.product.product_utils.UnitMeasure;
-import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +35,7 @@ public class OrderProduct {
     private long orderProductId;
 
     private String productName;
-    private UnitMeasure unitMeasure;
+    private String unitMeasure;
     @Column(
             name = "product_id",
             updatable = false

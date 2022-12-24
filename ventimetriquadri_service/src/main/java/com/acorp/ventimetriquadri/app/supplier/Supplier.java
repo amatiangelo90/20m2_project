@@ -2,6 +2,7 @@ package com.acorp.ventimetriquadri.app.supplier;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.product.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +49,7 @@ public class Supplier implements Serializable {
     private String address;
     private String city;
     private String cap;
+    private String code;
     @Column(
             name = "phone",
             unique = true,
@@ -56,6 +58,10 @@ public class Supplier implements Serializable {
     private String phoneNumber;
     private String email;
     private String pec;
+    private String cf;
+    private String country;
+
+    private long createdByUserId;
 
     @Transient
     private long branchId;

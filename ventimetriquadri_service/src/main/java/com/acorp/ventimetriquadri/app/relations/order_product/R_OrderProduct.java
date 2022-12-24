@@ -1,6 +1,5 @@
 package com.acorp.ventimetriquadri.app.relations.order_product;
 
-import com.acorp.ventimetriquadri.app.product.product_utils.UnitMeasure;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,7 @@ public class R_OrderProduct {
 
     private long orderProductId;
     private String productName;
-    private UnitMeasure unitMeasure;
+    private String unitMeasure;
     private long productId;
     private double price;
     private double amount;

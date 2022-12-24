@@ -76,29 +76,47 @@ public class UserService {
     }
 
     public UserEntity findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        if(email != null && !"".equalsIgnoreCase(email)){
+            logger.info("Retrieve user by email: " + email);
+            Optional<UserEntity> userOpt = userRepository.findByEmail(email);
+            if(userOpt.isPresent()){
+                userOpt.get().setBranchList(retrieveAllBranchesByUserId(userOpt.get().getUserId()));
+            }else{
+                throw new RuntimeException("Errore - Nessun utente trovato con la seguente email: " + email );
+            }
+            return userOpt.get();
+        }else{
+            throw new RuntimeException("Errore - La mail per la ricerca dell'utente risulta NULL o vuota. Inserire una mail corretta");
+        }
+
     }
 
     public List<Branch> retrieveAllBranchesByUserId(long userId){
 
         logger.info("Retrieve all Branches for the user with Id " + userId);
-        List<UserBranch> userBranches = userBranchRepository.retrieveBranchesByUserId(UserEntity.builder().userId(userId).build());
+        Optional<List<UserBranch>> userBranches = userBranchRepository.retrieveBranchesByUserId(UserEntity.builder().userId(userId).build());
 
-        List<Branch> branches = new ArrayList<>();
+        if(userBranches.isPresent()){
+            List<Branch> branches = new ArrayList<>();
 
-        for (UserBranch ub : userBranches){
-            ub.getBranch().setToken(ub.getToken());
-            branches.add(ub.getBranch());
-        }
+            for (UserBranch ub : userBranches.get()){
+                ub.getBranch().setToken(ub.getToken());
+                ub.getBranch().setUserPriviledge(ub.getUserPriviledge());
+                branches.add(ub.getBranch());
+            }
 
-        for(Branch branch : branches){
-            branch.setStorages(storageService.findAllStorageByBranch(branch));
-            branch.setSuppliers(branchService.retrieveSuppliersByBranchId(branch.getBranchId()));
-            branch.setEvents(eventService.findOpenEventsByBranchId(branch.getBranchId()));
+            for(Branch branch : branches){
+                branch.setStorages(storageService.findAllStorageByBranch(branch));
+                branch.setSuppliers(branchService.retrieveSuppliersByBranchId(branch.getBranchId()));
+                branch.setEvents(eventService.findOpenEventsByBranchId(branch.getBranchId()));
 //            branch.setOrderEntityList(branchOrderService.findOrdersByBranchId(branch));
 //           branch.setBranchEvent(branchEventStorageService.findOpenEventsByBranchId(branch));
+            }
+            return branches;
+        }else{
+            return new ArrayList<>();
         }
-        return branches;
+
     }
 
     public UserBranch save(UserBranch userBranch){

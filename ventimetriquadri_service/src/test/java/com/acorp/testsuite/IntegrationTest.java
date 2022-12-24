@@ -160,7 +160,7 @@ class IntegrationTest {
         suppliersService = new SuppliersService(supplierRepository, branchSupplierRepository);
 
         storageService = new StorageService(storageRepository, branchStorageRepository, storageProductRepository, productRepository);
-        branchService = new BranchService(branchRepository, userBranchRepository, branchSupplierRepository, supplierProductRepository);
+        branchService = new BranchService(branchRepository, userBranchRepository, branchSupplierRepository, supplierProductRepository, storageService, eventService);
         userService = new UserService(userRepository, userBranchRepository, storageService, branchService, eventService);
         emailEngineService = new EmailEngineService();
 
@@ -417,11 +417,6 @@ class IntegrationTest {
 
         List<Branch> branches = userService.retrieveAllBranchesByUserId(userEntity1.getUserId());
 
-        assertEquals(Utils.jsonFormat(brAfterUpdate), Utils.jsonFormat(branches));
-        System.out.println("XXXXXXXXXXXXXXXXXXXX: " + Utils.jsonFormat(branches));
-        System.out.println("YYYYYYYYYYYYYYYYYYYY: " + Utils.jsonFormat(brAfterUpdate));
-
-
         OrderEntity orderEntity = buildOrderEntity(
                 branches.get(0).getBranchId(),
                 branches.get(0).getSuppliers().get(0).getSupplierId(),
@@ -430,8 +425,13 @@ class IntegrationTest {
 
 
 //        Mockito.when(emailEngineService.sendEmail(any())).thenThrow(new CustomException("Customer exception for test"));
-        OrderEntity orderProcessed = orderService.sendOrder(orderEntity);
+        OrderEntity orderProcessed = orderService.sendOrder(orderEntity, orderEntity.getProducts());
         assertEquals(orderProcessed.getOrderStatus(), OrderStatus.INVIATO);
+
+        branches = userService.retrieveAllBranchesByUserId(userEntity1.getUserId());
+
+        assertEquals(Utils.jsonFormat(brAfterUpdate), Utils.jsonFormat(branches));
+        System.out.println("XXXXXXXXXXXXXXXXXXXX: " + Utils.jsonFormat(branches));
     }
 
 
@@ -450,8 +450,8 @@ class IntegrationTest {
                 .build();
     }
 
-    private List<R_OrderProduct> buildOrderProducts(long supplierId) {
-        List<R_OrderProduct> r_orderProducts = new ArrayList<>();
+    private ArrayList<R_OrderProduct> buildOrderProducts(long supplierId) {
+        ArrayList<R_OrderProduct> r_orderProducts = new ArrayList<>();
 
         List<Product> allBySupplierId = supplierProductRepository.findAllBySupplierId(Supplier.builder().supplierId(supplierId).build());
 
@@ -461,7 +461,7 @@ class IntegrationTest {
                     .productId(product.getProductId())
                     .productName(product.getName())
                     .price(product.getPrice())
-                    .unitMeasure(product.getUnitMeasure())
+                    .unitMeasure(product.getUnitMeasure().name())
                     .build());
         }
 
