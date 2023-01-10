@@ -34,10 +34,9 @@ public class ExpenceEvent {
     )
     private long expenceId;
     private String description;
+    private double price;
     private double amount;
     private String dateIntert;
-
-    @JsonIgnore
     private long eventId;
 
 }

@@ -13,7 +13,7 @@ import java.util.Properties;
 public class EmailEngineService {
 
 
-    public EmailSenderResponse sendEmail(EmailEntity emailEntity) throws EmailSenderException {
+    public EmailSenderResponse sendEmail(EmailEntity emailEntity) {
         try {
             System.out.println("Sendind email to : " + emailEntity.getSupplierEmail());
             System.out.println("message : " + emailEntity.getMessage());
@@ -52,13 +52,25 @@ public class EmailEngineService {
                     .status("OK")
                     .build();
         } catch (AddressException e) {
-            throw new EmailSenderException(e);
+            return EmailSenderResponse.builder()
+                    .message(e.getMessage())
+                    .status("KO")
+                    .build();
         } catch(SMTPAddressFailedException e){
-            throw new EmailSenderException(e);
+            return EmailSenderResponse.builder()
+                    .message(e.getMessage())
+                    .status("KO")
+                    .build();
         } catch (MessagingException e) {
-            throw new EmailSenderException(e);
+            return EmailSenderResponse.builder()
+                    .message(e.getMessage())
+                    .status("KO")
+                    .build();
         } catch (Exception e) {
-            throw new EmailSenderException(e);
+            return EmailSenderResponse.builder()
+                    .message(e.getMessage())
+                    .status("KO")
+                    .build();
         }
     }
 }

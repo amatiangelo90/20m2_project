@@ -38,6 +38,10 @@ public class Workstation {
             updatable = false
     )
     private long workstationId;
+    @Column(
+            name = "name",
+            nullable = false
+    )
     private String name = "";
     private String responsable;
     private String extra;
@@ -45,13 +49,9 @@ public class Workstation {
     @Enumerated
     private WorkstationType workstationType;
 
-    @Enumerated
-    private WorkstationStatus workstationStatus;
-
     @Transient
     private List<R_WorkstationProduct> products = new ArrayList<>();
 
-    @JsonIgnore
     private long eventId;
 
 

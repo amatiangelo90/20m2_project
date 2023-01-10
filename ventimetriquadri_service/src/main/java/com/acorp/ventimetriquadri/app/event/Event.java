@@ -41,6 +41,7 @@ public class Event implements Serializable {
     private long eventId;
 
     private String name = "";
+    private String createdBy = "";
     private String dateEvent = "";
     private String dateCreation = "";
     @Enumerated
@@ -59,7 +60,6 @@ public class Event implements Serializable {
 
     @Transient
     private long storageId;
-
 
     @Override
     public boolean equals(Object o) {

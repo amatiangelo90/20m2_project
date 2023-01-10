@@ -3,6 +3,7 @@ package com.acorp.ventimetriquadri.app.user;
 import com.acorp.ventimetriquadri.app.branch.Branch;
 import com.acorp.ventimetriquadri.app.branch.BranchService;
 import com.acorp.ventimetriquadri.app.event.EventService;
+import com.acorp.ventimetriquadri.app.order.OrderService;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranch;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserBranchRepository;
 import com.acorp.ventimetriquadri.app.storage.StorageService;
@@ -39,6 +40,9 @@ public class UserService {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private OrderService orderService;
 
 
     public UserEntity addNewUser(UserEntity userEntity) {
@@ -109,7 +113,7 @@ public class UserService {
                 branch.setStorages(storageService.findAllStorageByBranch(branch));
                 branch.setSuppliers(branchService.retrieveSuppliersByBranchId(branch.getBranchId()));
                 branch.setEvents(eventService.findOpenEventsByBranchId(branch.getBranchId()));
-//            branch.setOrderEntityList(branchOrderService.findOrdersByBranchId(branch));
+                branch.setOrders(orderService.findOrderByBranch(branch));
 //           branch.setBranchEvent(branchEventStorageService.findOpenEventsByBranchId(branch));
             }
             return branches;

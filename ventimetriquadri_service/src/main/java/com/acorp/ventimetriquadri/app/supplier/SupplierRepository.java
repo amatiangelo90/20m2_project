@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
-    @Query(value = "SELECT supplier FROM Supplier supplier where phone = ?1")
-    Supplier findByPhone(String phone);
+    @Query(value = "SELECT supplier FROM Supplier supplier where supplier.supplierCode = ?1")
+    Supplier findByCode(String code);
 }

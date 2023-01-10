@@ -10,10 +10,9 @@ import com.acorp.ventimetriquadri.app.event.workstations.Workstation;
 import com.acorp.ventimetriquadri.app.event.workstations.WorkstationService;
 import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorage;
 import com.acorp.ventimetriquadri.app.relations.branch_event.BranchEventStorageRepository;
-import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRelation;
-import com.acorp.ventimetriquadri.app.relations.event_expence.EventExpenceRepository;
 import com.acorp.ventimetriquadri.app.relations.event_workstation.EventWorkstationRelation;
 import com.acorp.ventimetriquadri.app.relations.event_workstation.EventWorkstationRepository;
+import com.acorp.ventimetriquadri.app.relations.workstation_product.R_WorkstationProduct;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.storage.StorageRepository;
 import lombok.AllArgsConstructor;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Thread.sleep;
+
 @Service
 @AllArgsConstructor
 public class EventService {
@@ -37,10 +38,7 @@ public class EventService {
     private EventRepository eventRepository;
 
     @Autowired
-    private EventExpenceRepository eventExpenceRepository;
-
-    @Autowired
-    private BranchEventStorageRepository branchEventStorageRepository;
+    private BranchEventStorageRepository eventBranchStorageRepository;
 
     @Autowired
     private ExpenceRepository expenceRepository;
@@ -73,12 +71,23 @@ public class EventService {
         }else{
             logger.info("Creazione dell'evento " + event.toString());
             Event eventSaved = eventRepository.save(event);
-            branchEventStorageRepository.save(
+
+            eventBranchStorageRepository.save(
                     BranchEventStorage.builder()
                             .event(eventSaved)
                             .storage(Storage.builder().storageId(event.getStorageId()).build())
-                            .branch(Branch.builder().branchId(event.getStorageId()).build())
+                            .branch(Branch.builder().branchId(event.getBranchId()).build())
                             .build());
+
+            for(Workstation workstation : event.getWorkstations()){
+                workstation.setEventId(eventSaved.getEventId());
+                Workstation workstationSaved = workstationService.createWorkstation(workstation);
+                eventWorkstationRepository.save(EventWorkstationRelation
+                        .builder()
+                        .workstation(workstationSaved)
+                        .event(eventSaved)
+                        .build());
+            }
             return eventSaved;
         }
     }
@@ -109,6 +118,7 @@ public class EventService {
 
     @Transactional
     public void deleteEvent(long eventId){
+
         logger.info("Eliminazione dell'evento con id " + eventId + " in corso..");
         Optional<Event> eventToDelete = eventRepository.findById(eventId);
 
@@ -119,10 +129,9 @@ public class EventService {
                 workstationService.removeWorkstation(workstation.getWorkstationId());
             }
 
-            eventExpenceRepository.removeByEvent(Event.builder().eventId(eventId).build());
             expenceRepository.removeByEventId(eventId);
 
-            branchEventStorageRepository.deleteByEvent(Event.builder().eventId(eventId).build());
+            eventBranchStorageRepository.deleteByEvent(Event.builder().eventId(eventId).build());
             eventRepository.deleteById(eventId);
         }else{
             logger.info("L'evento con id " + eventId + " risulta già rimosso");
@@ -151,7 +160,7 @@ public class EventService {
     }
 
     public List<BranchEventStorage> findAllByBranchId(Branch branch) {
-        List<BranchEventStorage> allBranchEventStorage = branchEventStorageRepository.findByBranchId(branch);
+        List<BranchEventStorage> allBranchEventStorage = eventBranchStorageRepository.findByBranchId(branch);
         for(BranchEventStorage branchEventStorage : allBranchEventStorage){
             branchEventStorage.getEvent().setExpenceEvents(expenceRepository.findAllByEventId(branchEventStorage.getEvent().getEventId()));
         }
@@ -168,45 +177,89 @@ public class EventService {
 
     private List<Event> findEventsByBranchIdWithEventState(long branchId, EventStatus status) {
         logger.info("Ricerca eventi per branch con id [" + branchId + "] e stato evento " + status.name());
+
         List<Event> events = new ArrayList<>();
 
-        List<BranchEventStorage> allByBranchId = branchEventStorageRepository.findByBranchId(Branch.builder().branchId(branchId).build());
+        List<BranchEventStorage> allByBranchId = eventBranchStorageRepository.findByBranchId(Branch.builder().branchId(branchId).build());
+
+
         for(BranchEventStorage branchEventStorageService : allByBranchId){
             if(branchEventStorageService.getEvent().getEventStatus() == status){
+                branchEventStorageService.getEvent().setStorageId(branchEventStorageService.getStorage().getStorageId());
+                branchEventStorageService.getEvent().setBranchId(branchEventStorageService.getBranch().getBranchId());
                 events.add(branchEventStorageService.getEvent());
             }
         }
+
         for(Event event : events){
-            event.setExpenceEvents(eventExpenceRepository.findAllByEvent(event));
-            event.setWorkstations(eventWorkstationRepository.findAllWorkstationsByEvent(event));
+            List<Workstation> allWorkstationsByEvent = eventWorkstationRepository.findAllWorkstationsByEvent(event);
+            for(Workstation workstation : allWorkstationsByEvent){
+                workstation.setProducts(workstationService.retrieveAllProductByWorkstationId(workstation.getWorkstationId()));
+            }
+            event.setWorkstations(allWorkstationsByEvent);
+            event.setExpenceEvents(expenceRepository.findAllByEventId(event.getEventId()));
+
         }
         return events;
+    }
+
+    public Event findOpenEventsByEventId(long eventId) {
+        logger.info("Ricerca eventi per event id [" + eventId + "]");
+
+        Optional<Event> eventById = eventRepository.findById(eventId);
+        if(eventById.isPresent()){
+            eventById.get().setWorkstations(eventWorkstationRepository.findAllWorkstationsByEvent(eventById.get()));
+            eventById.get().setExpenceEvents(expenceRepository.findAllByEventId(eventById.get().getEventId()));
+            return eventById.get();
+        }else{
+            throw new IllegalArgumentException("Errore - Nessun evento trovato per l'id [" + eventId + "]");
+        }
     }
 
     @Transactional
     public void deleteEventExpence(ExpenceEvent expenceEvent){
         logger.info("Delete Event Expence : " + expenceEvent.toString());
-        eventExpenceRepository.deleteByExpenceId(expenceEvent.getExpenceId());
         expenceRepository.delete(expenceEvent);
     }
 
 
     @Transactional
-    public void closeEvent(Event event) {
-        if(event == null){
-            throw new IllegalArgumentException("Errore - Impossibile chiudere l'evento. L'oggetto ricevuto dal metodo è NULL");
+    public void closeEvent(long eventId) {
+        if(eventId == 0){
+            throw new IllegalArgumentException("Errore - Impossibile chiudere l'evento. L'id dell'evento è 0.");
         }
-        logger.info("Chiusura dell 'evento [" + event.toString() + "] in corso..");
-        Optional<Event> eventOpt = eventRepository.findById(event.getEventId());
+
+        logger.info("Chiusura dell 'evento con id[" + eventId + "] in corso..");
+
+        Optional<Event> eventOpt = eventRepository.findById(eventId);
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if(eventOpt.isPresent()){
+
             eventOpt.get().setEventStatus(EventStatus.CHIUSO);
+            List<Workstation> allWorkstationsByEvent = eventWorkstationRepository
+                    .findAllWorkstationsByEvent(Event.builder().eventId(eventId).build());
 
-            // TODO : riportare la giacenza residua dei prodotti nel magazzino di riferimento
+            logger.info("Riporto la giacenza dei prodotti in magazzino ..");
 
+            for(Workstation workstation : allWorkstationsByEvent){
+                List<R_WorkstationProduct> r_workstationProducts = workstationService.retrieveAllProductByWorkstationId(workstation.getWorkstationId());
 
-
+                for(R_WorkstationProduct r_workstationProduct : r_workstationProducts){
+                    workstationService.reloadNotConsumedAmountOfworkstationIntoReferredStorage(r_workstationProduct.getWorkstationProductId());
+                }
+            }
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }else{
-            throw new IllegalArgumentException("Errore - Impossibile chiudere l'evento " + event.toString() +". Non è stato possibile recuperare le informazioni tramite l'id evento " + event.getEventId());
+            throw new IllegalArgumentException("Errore - Impossibile chiudere l'evento " + eventId +". Non è stato possibile recuperare le informazioni tramite l'id evento " + eventId);
         }
     }
 
@@ -234,7 +287,6 @@ public class EventService {
                 updatingEventExpence.get().setDescription(expenceEvent.getDescription());
 
             return updatingEventExpence.get();
-
         }
     }
 
@@ -245,14 +297,12 @@ public class EventService {
     @Transactional
     public ExpenceEvent saveExpence(ExpenceEvent expenceEvent) {
 
-        ExpenceEvent savedExpenceEvent = expenceRepository.save(expenceEvent);
-
-        eventExpenceRepository.save(EventExpenceRelation
-                .builder()
-                .expenceEvent(savedExpenceEvent)
-                .event(Event.builder().eventId(expenceEvent.getEventId()).build()).build());
-
-        return savedExpenceEvent;
+        if(expenceEvent.getEventId() == 0){
+            throw new IllegalStateException("Errore. L'oggetto expence non è valido. Il campo eventId non può essere nullo o vuoto. Expence Body: " + expenceEvent.toString());
+        }else{
+            return expenceRepository.save(expenceEvent);
+        }
     }
+
 
 }

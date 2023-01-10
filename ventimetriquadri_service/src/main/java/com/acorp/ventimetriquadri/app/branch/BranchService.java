@@ -1,6 +1,7 @@
 package com.acorp.ventimetriquadri.app.branch;
 
 import com.acorp.ventimetriquadri.app.event.EventService;
+import com.acorp.ventimetriquadri.app.order.OrderService;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplier;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierRepository;
 import com.acorp.ventimetriquadri.app.relations.supplier_product.SupplierProductRepository;
@@ -18,13 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class BranchService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BranchService.class);
 
     @Autowired
     private BranchRepository branchRepository;
@@ -44,19 +46,19 @@ public class BranchService {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private OrderService orderService;
+
     @Transactional
     public UserBranch addNewBranch(Branch branch) {
         if(branch.getUserId() == 0){
             throw new IllegalArgumentException("Error - User id must be provided to link current branch to a User Entity");
         }
+        String millis = String.valueOf(Instant.now().toEpochMilli());
 
-        Random rnd = new Random();
+        logger.info("Create branch " + Utils.jsonFormat(branch) + " with unique 8 digit code: " + millis.substring(millis.length()-8));
 
-        int n = 10000000 + rnd.nextInt(90000000);
-
-        logger.info("Create branch " + Utils.jsonFormat(branch) + " with unique 8 digit code: " + n);
-
-        branch.setBranchCode(String.valueOf(n));
+        branch.setBranchCode(millis.substring(millis.length()-8));
 
         Branch branchSaved = branchRepository.save(branch);
         UserBranch userBranch = UserBranch.builder()
@@ -115,7 +117,8 @@ public class BranchService {
     public List<Supplier> retrieveSuppliersByBranchId(long branchId){
         List<Supplier> suppliers = new ArrayList<>();
 
-        List<BranchSupplier> allSupplierByBranch = branchSupplierRepository.findAllSupplierByBranch(Branch.builder().branchId(branchId).build());
+        List<BranchSupplier> allSupplierByBranch
+                = branchSupplierRepository.findAllSupplierByBranch(Branch.builder().branchId(branchId).build());
 
         for(BranchSupplier branchSupplier : allSupplierByBranch){
             branchSupplier.getSupplier().setBranchId(branchSupplier.getBranch().getBranchId());
@@ -136,10 +139,6 @@ public class BranchService {
                 .branch(Branch.builder().branchId(branchId).build())
                 .supplier(Supplier.builder().supplierId(supplierId).build())
                 .build());
-    }
-
-    public Optional<Branch> findByBranchId(long branchId) {
-        return branchRepository.findById(branchId);
     }
 
     public Branch retrieveByBranchId(long branchId) {
@@ -164,10 +163,15 @@ public class BranchService {
     }
 
     Branch enrichBranchWithStoragesSuppliersEventsOrders(Branch branch){
+
         branch.setStorages(storageService.findAllStorageByBranch(branch));
+
         branch.setSuppliers(retrieveSuppliersByBranchId(branch.getBranchId()));
+
         branch.setEvents(eventService.findOpenEventsByBranchId(branch.getBranchId()));
-//            branch.setOrderEntityList(branchOrderService.findOrdersByBranchId(branch));
+
+        branch.setOrders(orderService.findOrderByBranch(branch));
+
         return branch;
     }
 
@@ -184,4 +188,8 @@ public class BranchService {
                 .build());
 
     }
+
+
+
+
 }

@@ -18,7 +18,7 @@ import java.util.Set;
 @Entity(name = "Supplier")
 @Table(name = "SUPPLIER",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"supplier_id", "email"}))
+        @UniqueConstraint(columnNames={"name", "branchId", "supplierCode"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -49,7 +49,13 @@ public class Supplier implements Serializable {
     private String address;
     private String city;
     private String cap;
-    private String code;
+    @Column(
+            name = "supplierCode",
+            nullable = false,
+            unique = true,
+            length = 8
+    )
+    private String supplierCode;
     @Column(
             name = "phone",
             unique = true,
@@ -62,8 +68,6 @@ public class Supplier implements Serializable {
     private String country;
 
     private long createdByUserId;
-
-    @Transient
     private long branchId;
 
     @Transient

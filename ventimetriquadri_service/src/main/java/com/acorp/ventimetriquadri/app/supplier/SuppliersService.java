@@ -1,7 +1,6 @@
 package com.acorp.ventimetriquadri.app.supplier;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
-import com.acorp.ventimetriquadri.app.event.EventService;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplier;
 import com.acorp.ventimetriquadri.app.relations.branch_supplier.BranchSupplierRepository;
 import com.acorp.ventimetriquadri.utils.Utils;
@@ -12,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
@@ -33,18 +32,19 @@ public class SuppliersService {
     public Supplier saveSupplier(Supplier supplier) {
         logger.info("Inserimento fornitore : " + Utils.jsonFormat(supplier));
         try{
-            supplier.setCode(UUID.randomUUID().toString());
+            String millis = String.valueOf(Instant.now().toEpochMilli());
+            supplier.setSupplierCode(millis.substring(millis.length()-8));
             Supplier supplierdSaved = supplierRepository.save(supplier);
+
             branchSupplierRepository.save(
                     BranchSupplier.builder()
                             .branch(Branch.builder().branchId(supplier.getBranchId()).build())
                             .supplier(supplierdSaved)
                             .build());
             return supplierdSaved;
-        }catch(Exception e){
+        } catch(Exception e){
             throw new IllegalStateException(e);
         }
-
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class SuppliersService {
                 .supplier(Supplier.builder().supplierId(supplier.getSupplierId()).build())
                 .branch(Branch.builder().branchId(supplier.getBranchId()).build())
                 .build());
-        supplierRepository.deleteById(supplier.getSupplierId());
+        //supplierRepository.deleteById(supplier.getSupplierId());
     }
 
     public List<Supplier> findAll() {
@@ -94,14 +94,29 @@ public class SuppliersService {
         }
     }
 
-    public Supplier findByPhone(String phone) {
-        return supplierRepository.findByPhone(phone);
+    public Supplier findByCode(String code) {
+        logger.info("Retrieve supplier by code : " + code);
+        return supplierRepository.findByCode(code);
     }
 
 
     public Optional<Supplier> findSupplierById(long supplierId) {
         return supplierRepository.findById(supplierId);
+    }
 
+    @Transactional
+    public void connectSupplierToBranch(long branchId, long supplierId){
+        branchSupplierRepository.save(
+                BranchSupplier.builder()
+                        .branch(Branch.builder().branchId(branchId).build())
+                        .supplier(Supplier.builder().supplierId(supplierId).build())
+                        .build());
+    }
 
+    @Transactional
+    public void deleteRelationSupplierBranch(long supplierId, long branchId) {
+        branchSupplierRepository.deleteRelationBySupplierIdAndBranchId(
+                Supplier.builder().supplierId(supplierId).build(),
+                Branch.builder().branchId(branchId).build());
     }
 }

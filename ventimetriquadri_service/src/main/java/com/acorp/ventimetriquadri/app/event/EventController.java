@@ -23,13 +23,18 @@ public class EventController {
         return eventService.findOpenEventsByBranchId(branchId);
     }
 
+    @GetMapping(path = "/findeventbyeventid")
+    public Event retrieveEventsByEventId(@RequestParam("eventid") long eventId){
+        return eventService.findOpenEventsByEventId(eventId);
+    }
+
     @GetMapping(path = "/findeventbybranchid/closed")
     public List<Event> retrieveEventsClosedByBranchId(@RequestParam("branchid") long branchId){
         return eventService.findClosedEventByBranchId(branchId);
     }
 
     @PostMapping(path = "/save")
-    public Event save(Event event) {
+    public Event save(@RequestBody Event event) {
         return eventService.createEvent(event);
     }
 
@@ -38,20 +43,25 @@ public class EventController {
         eventService.deleteEvent(eventId);
     }
 
+    @PutMapping(path = "/close")
+    public void close(@RequestParam("eventId") long eventId){
+        eventService.closeEvent(eventId);
+    }
+
     @PutMapping(path = "/update")
-    public void update(Event event){
+    public void update(@RequestBody Event event){
         eventService.update(event);
     }
 
 
     // WORKSTATION REOURCES
     @PostMapping(path = "/workstation/create")
-    public Workstation createWorkstation(Workstation workstation){
+    public Workstation createWorkstation(@RequestBody Workstation workstation){
         return eventService.createWorkstation(workstation);
     }
 
     @PostMapping(path = "/workstation/addproduct")
-    public Workstation addProductToWorkstation(Workstation workstation){
+    public Workstation addProductToWorkstation(@RequestBody Workstation workstation){
         return eventService.createWorkstation(workstation);
     }
 
@@ -63,17 +73,16 @@ public class EventController {
     }
 
     @PostMapping(path = "/expence/create")
-    public ExpenceEvent saveExpence(ExpenceEvent expenceEvent){
+    public ExpenceEvent saveExpence(@RequestBody ExpenceEvent expenceEvent){
         return eventService.saveExpence(expenceEvent);
     }
-
     @DeleteMapping(path = "expence/delete")
-    public void deleteExpence(ExpenceEvent expenceEvent){
+    public void deleteExpence(@RequestBody ExpenceEvent expenceEvent){
         eventService.deleteEvent(expenceEvent);
     }
 
     @PutMapping(path = "expence/update")
-    public void updateExpence(ExpenceEvent expenceEvent){
+    public void updateExpence(@RequestBody ExpenceEvent expenceEvent){
         eventService.updateExpence(expenceEvent);
     }
 }

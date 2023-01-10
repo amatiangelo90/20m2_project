@@ -24,16 +24,16 @@ public class ProductController {
     }
 
     @PostMapping(path = "/save")
-    public void save(Product product) { productService.saveProduct(product); }
+    public Product save(@RequestBody Product product) { return productService.saveProduct(product); }
 
     @DeleteMapping(path = "/delete")
-    public void delete(Product product){
+    public void delete(@RequestBody Product product){
         productService.delete(product);
     }
 
     @PutMapping(path = "/update")
-    public void update(Product product){
-        productService.update(product);
+    public Product update(@RequestBody Product product){
+        return productService.update(product);
     }
 
     @GetMapping(path = "/retrievebysupplier")

@@ -16,7 +16,7 @@ public class UsersController {
     private UserService userService;
 
     @Autowired
-    public UsersController(UserService userService) {
+    public UsersController(@RequestBody UserService userService) {
         this.userService = userService;
     }
 
@@ -36,15 +36,15 @@ public class UsersController {
     }
 
     @PostMapping(path = "/save")
-    public void save(UserEntity userEntity) { userService.addNewUser(userEntity); }
+    public void save(@RequestBody UserEntity userEntity) { userService.addNewUser(userEntity); }
 
     @DeleteMapping(path = "/delete")
-    public void delete(UserEntity userEntity){
+    public void delete(@RequestBody UserEntity userEntity){
         userService.delete(userEntity);
     }
 
     @PutMapping(path = "/update")
-    public void update(UserEntity userEntity){
+    public void update(@RequestBody UserEntity userEntity){
         userService.update(userEntity);
     }
 

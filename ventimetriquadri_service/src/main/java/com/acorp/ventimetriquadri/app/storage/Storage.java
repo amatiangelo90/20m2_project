@@ -16,12 +16,11 @@ import java.util.Objects;
 @Entity(name = "Storage")
 @Table(name = "STORAGE",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"storage_id", "name"}))
+        @UniqueConstraint(columnNames={"name", "branchId"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-
 public class Storage {
     @Id
     @SequenceGenerator(
@@ -43,8 +42,6 @@ public class Storage {
     private String address= "";
     private String city = "";
     private String cap = "";
-
-    @Transient
     private long branchId;
 
     @Transient

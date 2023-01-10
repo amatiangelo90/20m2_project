@@ -1,6 +1,5 @@
 package com.acorp.ventimetriquadri.app.relations.storage_product;
 
-import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.product.product_utils.UnitMeasure;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +39,9 @@ public class StorageProduct {
     private double stock;
     private UnitMeasure unitMeasure;
     private double amountHundred;
+    private long supplierId;
+    private double price;
+
     private boolean isAvailable;
     @Column(
             name = "product_id",
@@ -51,5 +53,4 @@ public class StorageProduct {
     @JoinColumn(name="storage_id")
     @JsonIgnore
     private Storage storage;
-
 }

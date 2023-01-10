@@ -45,7 +45,15 @@ public class WorkstationProduct {
     @Enumerated
     private UnitMeasure unitMeasure;
     private double stockFromStorage;
-    private double consumed;
+    private double leftovers;
+
+    @Transient
+    private double amountLoad;
+
+    @Transient
+    private double amountUnload;
+
+    private double price;
 
     private double amountHundred;
 
@@ -57,7 +65,6 @@ public class WorkstationProduct {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="workstation_id")
-    @JsonIgnore
     private Workstation workstation;
 
 }

@@ -1,6 +1,7 @@
 package com.acorp.ventimetriquadri.app.storage;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
+import com.acorp.ventimetriquadri.app.event.workstations.Workstation;
 import com.acorp.ventimetriquadri.app.product.Product;
 import com.acorp.ventimetriquadri.app.product.ProductRepository;
 import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorage;
@@ -8,6 +9,9 @@ import com.acorp.ventimetriquadri.app.relations.branch_storage.BranchStorageRepo
 import com.acorp.ventimetriquadri.app.relations.storage_product.R_StorageProduct;
 import com.acorp.ventimetriquadri.app.relations.storage_product.StorageProduct;
 import com.acorp.ventimetriquadri.app.relations.storage_product.StorageProductRepository;
+import com.acorp.ventimetriquadri.app.relations.workstation_product.WorkstationProduct;
+import com.acorp.ventimetriquadri.app.relations.workstation_product.WorkstationProductRepository;
+import com.acorp.ventimetriquadri.app.storage.utils_model.LoadUnloadModel;
 import com.acorp.ventimetriquadri.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -41,6 +45,11 @@ public class StorageService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private WorkstationProductRepository workstationProductRepository;
+
+
+
     public List<Storage> findAllStorageByBranch(Branch branch){
 
         List<Storage> storages = branchStorageRepository.findAllStorageByBranch(branch);
@@ -49,9 +58,7 @@ public class StorageService {
 
             List<StorageProduct> storageProducts = retrieveAllProductByStorage(storage);
             if(!storageProducts.isEmpty()) {
-
                 List<R_StorageProduct> r_storageProducts = parseStorageProductsList(storageProducts);
-
                 storage.getProducts().addAll(r_storageProducts);
             }
         }
@@ -73,7 +80,7 @@ public class StorageService {
     }
 
 
-    public void insertProductIntoStorage(long storageId, long productId) {
+    public R_StorageProduct insertProductIntoStorage(long storageId, long productId) {
 
         if(storageId == 0){
             throw new IllegalStateException("Errore - Specidicare in quale magazzino inserire il prodotto");
@@ -83,24 +90,34 @@ public class StorageService {
             Optional<Product> product = productRepository.findById(productId);
             if(product.isPresent()){
                 logger.info("Insert into storage with id " + storageId + " the following product: " + Utils.jsonFormat(product.get()));
-                storageProductRepository.save(StorageProduct.builder()
+                StorageProduct save = storageProductRepository.save(StorageProduct.builder()
                         .amountHundred(0.0)
                         .isAvailable(true)
                         .stock(0.0)
                         .unitMeasure(product.get().getUnitMeasure())
                         .productId(product.get().getProductId())
+                        .price(product.get().getPrice())
                         .productName(product.get().getName())
+                        .supplierId(product.get().getSupplierId())
                         .storage(Storage.builder().storageId(storageId).build())
                         .build());
+
+                return R_StorageProduct.builder()
+                        .productId(save.getProductId())
+                        .productName(save.getProductName())
+                        .isAvailable(true)
+                        .price(product.get().getPrice())
+                        .storageProductId(save.getStorageProductId())
+                        .unitMeasure(save.getUnitMeasure().name())
+                        .stock(save.getStock())
+                        .supplierId(save.getSupplierId())
+                        .amountHundred(save.getAmountHundred()).build();
+
             }else{
                 throw new IllegalStateException("Errore - Non ho trovato prodotti con id [" + productId +"] da inserire nel magazzino");
             }
 
         }
-    }
-
-    public void editProductIntoStorage(){
-
     }
 
     public List<StorageProduct> retrieveAllProductByStorage(Storage storage) {
@@ -112,6 +129,7 @@ public class StorageService {
 
         storage.setCreationDate(Utils.globalDTFormat.format(new Date()));
         Storage storageSaved = storageRepository.save(storage);
+
         branchStorageRepository.save(BranchStorage.builder()
                 .storage(storageSaved)
                 .branch(Branch.builder().branchId(storage.getBranchId()).build()).build());
@@ -166,24 +184,76 @@ public class StorageService {
     }
 
     @Transactional
-    public void removeStockAmountFromStorageProduct(long storageProductIt, double amountToRemove) {
-        if(storageProductIt == 0){
+    public void removeStockAmountFromStorageProduct(long storageProductId, double amountToRemove) {
+        if(storageProductId == 0){
             throw new IllegalArgumentException("Error - Cannot update Product into the storage. Product Id is NULL or 0");
         }
-        Optional<StorageProduct> storageProductById = storageProductRepository.findById(storageProductIt);
+        Optional<StorageProduct> storageProductById = storageProductRepository.findById(storageProductId);
         storageProductById.get().setStock(storageProductById.get().getStock() - amountToRemove);
     }
 
 
+    @Transactional
     public void removeProductFromStorage(long storageId, long productId) {
-        storageProductRepository.delete(StorageProduct
-                .builder()
-                .productId(productId)
-                .storage(Storage.builder().storageId(storageId).build())
-                .build());
+        logger.info("Remove product from storage. Storage id [" + storageId+"] - Product Id [" + productId+ "]");
+        storageProductRepository.deleteProdFromStorageByIds(Storage.builder().storageId(storageId).build(), productId);
     }
 
     public Optional<Storage> findStorageByStorageId(long storageId) {
         return storageRepository.findById(storageId);
+    }
+
+    @Transactional
+    public void emptystorage(long storageId) {
+        logger.info("Empty storage with id --> " + storageId);
+        storageProductRepository.emptyStorage(Storage.builder().storageId(storageId).build());
+
+    }
+
+    @Transactional
+    public void setstockzerotonegativeproducts(long storageId) {
+        logger.info("Set to 0 all product which have negative stock amount in storage with id --> " + storageId);
+        storageProductRepository.setstockzerotonegativeproducts(Storage.builder().storageId(storageId).build());
+    }
+
+    @Transactional
+    public void loadAmountOnStorage(List<LoadUnloadModel> loadUnloadModel) {
+
+        for(LoadUnloadModel loadUnloadModelItem : loadUnloadModel){
+            Optional<StorageProduct> storageProduct = storageProductRepository.retrieveProductsByStorageAndProductId(
+                    Storage.builder().storageId(loadUnloadModelItem.getStorageId()).build(),
+                    loadUnloadModelItem.getProductId());
+            if(storageProduct.isPresent()){
+                storageProduct.get().setStock(storageProduct.get().getStock() + loadUnloadModelItem.getAmount());
+            }
+        }
+
+    }
+
+    @Transactional
+    public void unloadAmountOnStorage(List<LoadUnloadModel> loadUnloadModel) {
+
+        for(LoadUnloadModel loadUnloadModelItem : loadUnloadModel){
+            Optional<StorageProduct> storageProduct = storageProductRepository.retrieveProductsByStorageAndProductId(
+                    Storage.builder().storageId(loadUnloadModelItem.getStorageId()).build(),
+                    loadUnloadModelItem.getProductId());
+            if(storageProduct.isPresent()){
+                storageProduct.get().setStock(storageProduct.get().getStock() - loadUnloadModelItem.getAmount());
+            }
+        }
+
+    }
+
+    @Transactional
+    public void updateAmountHundredValue(long storageProductId, double qHundredAmount) {
+        Optional<StorageProduct> storageProduct = storageProductRepository.findById(storageProductId);
+        if(storageProduct.isPresent()){
+            storageProduct.get().setAmountHundred(qHundredAmount);
+
+            workstationProductRepository.updateAmountHundredByProductId(qHundredAmount, storageProduct.get().getProductId());
+
+        }else{
+            throw new IllegalStateException("Errore. Non ho trovato prodotti su cui configurare q/100");
+        }
     }
 }

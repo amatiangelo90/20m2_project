@@ -32,7 +32,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void saveProduct(Product product) {
+    public Product saveProduct(Product product) {
 
         logger.info("Save product " + Utils.jsonFormat(product));
         if(product.getSupplierId() == 0){
@@ -44,10 +44,14 @@ public class ProductService {
                         .product(prodSaved)
                         .supplier(Supplier.builder().supplierId(product.getSupplierId()).build())
                         .build());
+        return prodSaved;
     }
 
+    @Transactional
     public void delete(Product product){
-        productRepository.deleteById(product.getProductId());
+        logger.info("Delete product with id : " + product.getProductId());
+        supplierProductRepository.deleteByProductId(Product.builder().productId(product.getProductId()).build());
+        //productRepository.deleteById(product.getProductId());
     }
 
     public List<Product> findAll() {
@@ -55,32 +59,34 @@ public class ProductService {
     }
 
     @Transactional
-    public void update(Product product) {
-        Optional<Product> updatingBranch = productRepository.findById(product.getProductId());
+    public Product update(Product product) {
+        logger.info("Aggiornamento del prodotto in corso..\n Prodotto da aggiornare: " + product.toString());
+        Optional<Product> updatingProd = productRepository.findById(product.getProductId());
 
-        if(!updatingBranch.isPresent()){
-            throw new IllegalStateException("Errore. Non ho trovato attività da aggiornare");
+        if(!updatingProd.isPresent()){
+            throw new IllegalStateException("Errore. Non ho trovato prodotti da aggiornare");
 
         }else{
 
-            if(updatingBranch.get().getName() != product.getName())
-                updatingBranch.get().setName(product.getName());
+            if(updatingProd.get().getName() != product.getName())
+                updatingProd.get().setName(product.getName());
 
-            if(updatingBranch.get().getCategory() != product.getCategory())
-                updatingBranch.get().setCategory(product.getCategory());
+            if(updatingProd.get().getCategory() != product.getCategory())
+                updatingProd.get().setCategory(product.getCategory());
 
-            if(updatingBranch.get().getDescription() != product.getDescription())
-                updatingBranch.get().setDescription(product.getDescription());
+            if(updatingProd.get().getDescription() != product.getDescription())
+                updatingProd.get().setDescription(product.getDescription());
 
-            if(updatingBranch.get().getPrice() != product.getPrice())
-                updatingBranch.get().setPrice(product.getPrice());
+            if(updatingProd.get().getPrice() != product.getPrice())
+                updatingProd.get().setPrice(product.getPrice());
 
-            if(updatingBranch.get().getVatApplied() != product.getVatApplied())
-                updatingBranch.get().setVatApplied(product.getVatApplied());
+            if(updatingProd.get().getVatApplied() != product.getVatApplied())
+                updatingProd.get().setVatApplied(product.getVatApplied());
 
-            if(updatingBranch.get().getUnitMeasure() != product.getUnitMeasure())
-                updatingBranch.get().setUnitMeasure(product.getUnitMeasure());
+            if(updatingProd.get().getUnitMeasure() != product.getUnitMeasure())
+                updatingProd.get().setUnitMeasure(product.getUnitMeasure());
 
+            return product;
         }
     }
 

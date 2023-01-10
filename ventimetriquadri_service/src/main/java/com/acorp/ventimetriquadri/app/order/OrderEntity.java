@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "OrderEntity")
 @Table(name = "ORDER_ENTITY",
@@ -47,11 +48,11 @@ public class OrderEntity {
     private OrderStatus orderStatus;
 
     @Transient
-    private String errorStatus;
+    private String errorMessage;
 
     @Transient
     @ElementCollection
-    ArrayList<R_OrderProduct> products;
+    List<R_OrderProduct> products;
 
     private String creationDate;
     private String senderUser;

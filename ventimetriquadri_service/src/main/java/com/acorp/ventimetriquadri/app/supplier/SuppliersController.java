@@ -12,34 +12,36 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class SuppliersController {
 
-    private SuppliersService suppliersService;
-
     @Autowired
-    public SuppliersController(SuppliersService suppliersService) {
-        this.suppliersService = suppliersService;
-    }
+    private SuppliersService suppliersService;
 
     @GetMapping(path = "/findall")
     public List<Supplier> retrieveAll(){
         return suppliersService.findAll();
     }
 
-    @GetMapping(path = "/findbyphone")
-    public Supplier retrieveByPhone(@RequestParam("phone") String phone){
-        return suppliersService.findByPhone(phone);
+    @GetMapping(path = "/findbycode")
+    public Supplier retrieveSupplierByCode(@RequestParam("suppliercode") String supplierCode){
+        return suppliersService.findByCode(supplierCode);
     }
 
     @PostMapping(path = "/save")
-    public Supplier save(Supplier supplier) { return suppliersService.saveSupplier(supplier); }
+    public Supplier save(@RequestBody Supplier supplier) {
+        return suppliersService.saveSupplier(supplier);
+    }
 
     @DeleteMapping(path = "/delete")
-    public void delete(Supplier supplier){
-        suppliersService.delete(supplier);
+    public void deleterelationsupplierbranch(@RequestParam long supplierId, @RequestParam long branchId){
+        suppliersService.deleteRelationSupplierBranch(supplierId, branchId);
     }
 
     @PutMapping(path = "/update")
-    public void update(Supplier supplier){
+    public void update(@RequestBody Supplier supplier){
         suppliersService.update(supplier);
     }
 
+    @GetMapping(path = "/connectbranchsupplier")
+    public void update(@RequestParam long branchId, @RequestParam long supplierId){
+        suppliersService.connectSupplierToBranch(branchId, supplierId);
+    }
 }

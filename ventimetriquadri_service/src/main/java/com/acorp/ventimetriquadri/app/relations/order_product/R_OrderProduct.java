@@ -23,6 +23,7 @@ public class R_OrderProduct {
                 .amount(orderProduct.getAmount())
                 .orderProductId(orderProduct.getOrderProductId())
                 .price(orderProduct.getPrice())
+                .unitMeasure(orderProduct.getUnitMeasure())
                 .productName(orderProduct.getProductName())
                 .productId(orderProduct.getProductId())
                 .build();

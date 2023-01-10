@@ -5,10 +5,8 @@ import com.acorp.ventimetriquadri.app.order.OrderEntity;
 import com.acorp.ventimetriquadri.app.relations.user_branch.UserPriviledge;
 import com.acorp.ventimetriquadri.app.storage.Storage;
 import com.acorp.ventimetriquadri.app.supplier.Supplier;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -22,6 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Builder
+@ToString
 public class Branch implements Serializable {
 
     @Id

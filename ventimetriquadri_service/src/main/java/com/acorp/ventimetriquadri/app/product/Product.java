@@ -52,7 +52,6 @@ public class Product implements Serializable {
     private String description = "";
     private String category = "";
 
-    @JsonIgnore
     private long supplierId;
 
 }

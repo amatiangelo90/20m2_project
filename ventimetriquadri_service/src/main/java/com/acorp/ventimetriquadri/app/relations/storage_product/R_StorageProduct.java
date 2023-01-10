@@ -20,6 +20,9 @@ public class R_StorageProduct implements Serializable {
     private double amountHundred;
     private boolean isAvailable;
     private long productId;
+    private double price;
+    private long supplierId;
+    private double orderAmount;
 
     public static R_StorageProduct r_storageProductFromStorageProd(StorageProduct storageProduct) {
         return R_StorageProduct.builder()
@@ -27,10 +30,12 @@ public class R_StorageProduct implements Serializable {
                 .isAvailable(storageProduct.isAvailable())
                 .productName(storageProduct.getProductName())
                 .unitMeasure(storageProduct.getUnitMeasure().name())
+                .supplierId(storageProduct.getSupplierId())
                 .productId(storageProduct.getProductId())
                 .storageProductId(storageProduct.getStorageProductId())
                 .stock(storageProduct.getStock())
-                .stock(storageProduct.getStock())
+                .orderAmount(0)
+                .price(storageProduct.getPrice())
                 .build();
     }
 }

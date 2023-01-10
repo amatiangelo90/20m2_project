@@ -1,8 +1,10 @@
 package com.acorp.ventimetriquadri.app.order;
 
 import com.acorp.ventimetriquadri.app.branch.Branch;
-import com.acorp.ventimetriquadri.app.branch.BranchService;
+import com.acorp.ventimetriquadri.app.branch.BranchRepository;
 import com.acorp.ventimetriquadri.app.order.utils.OrderStatus;
+import com.acorp.ventimetriquadri.app.relations.branch_order.BranchOrderStorageSupplier;
+import com.acorp.ventimetriquadri.app.relations.branch_order.BranchOrderRepository;
 import com.acorp.ventimetriquadri.app.relations.order_product.OrderProduct;
 import com.acorp.ventimetriquadri.app.relations.order_product.OrderProductRepository;
 import com.acorp.ventimetriquadri.app.relations.order_product.R_OrderProduct;
@@ -14,17 +16,24 @@ import com.acorp.ventimetriquadri.exception.CustomException;
 import com.acorp.ventimetriquadri.external_integration.email_service.EmailEngineService;
 import com.acorp.ventimetriquadri.external_integration.email_service.EmailEntity;
 import com.acorp.ventimetriquadri.external_integration.email_service.EmailSenderException;
+import com.acorp.ventimetriquadri.external_integration.email_service.EmailSenderResponse;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -36,10 +45,13 @@ public class OrderService {
     private SuppliersService suppliersService;
 
     @Autowired
-    private BranchService branchService;
+    private BranchRepository branchRepository;
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private BranchOrderRepository branchOrderRepository;
 
     @Autowired
     private EmailEngineService emailEngineService;
@@ -47,13 +59,20 @@ public class OrderService {
 
     @Transactional
     public OrderEntity sendOrder(OrderEntity orderEntity, List<R_OrderProduct> r_orderProductList) throws CustomException {
-        Optional<Supplier> supplierById = suppliersService.findSupplierById(orderEntity.getSupplierId());
-        Optional<Branch> branch = branchService.findByBranchId(orderEntity.getBranchId());
+        logger.info("Send current order : " + orderEntity.toString());
+        Optional<Supplier> supplier = suppliersService.findSupplierById(orderEntity.getSupplierId());
+        Optional<Branch> branch = branchRepository.findById(orderEntity.getBranchId());
         Optional<Storage> storage = storageService.findStorageByStorageId(orderEntity.getStorageId());
 
-        validateRequest(supplierById, branch, storage, orderEntity, r_orderProductList);
+        validateRequest(supplier,
+                branch,
+                storage,
+                orderEntity,
+                r_orderProductList);
 
+        orderEntity.setCode(UUID.randomUUID().toString());
         OrderEntity orderSaved = orderRepository.save(orderEntity);
+
 
         for(R_OrderProduct r_orderProduct : r_orderProductList){
             orderProductRepository.save(OrderProduct
@@ -67,37 +86,45 @@ public class OrderService {
                     .order(orderSaved)
                     .build());
         }
-        try {
-            emailEngineService.sendEmail(EmailEntity
-                    .builder()
-                    .branchAddress(branch.get().getAddress())
-                    .branchCap(branch.get().getCap())
-                    .branchCity(branch.get().getCity())
-                    .branchName(branch.get().getName())
-                    .branchNumber(branch.get().getPhoneNumber())
-                    .deliveryDate(orderEntity.getDeliveryDate())
-                    .supplierName(supplierById.get().getName())
-                    .supplierEmail(supplierById.get().getEmail())
-                    .message(buildMessageFromOrderProductList(orderEntity.getProducts()))
-                    .orderCode(orderEntity.getCode())
-                    .user_name(orderEntity.getSenderUser())
-                    .build());
 
+        // create relation between order and branch
+        branchOrderRepository.save(BranchOrderStorageSupplier.builder()
+                .branch(branch.get())
+                .storage(storage.get())
+                .supplier(supplier.get())
+                .orderEntity(orderSaved)
+                .build());
+
+
+        EmailSenderResponse emailSenderResponse = emailEngineService.sendEmail(EmailEntity
+                .builder()
+                .branchAddress(branch.get().getAddress())
+                .branchCap(branch.get().getCap())
+                .branchCity(branch.get().getCity())
+                .branchName(branch.get().getName())
+                .branchNumber(branch.get().getPhoneNumber())
+                .deliveryDate(orderEntity.getDeliveryDate())
+                .supplierName(supplier.get().getName())
+                .supplierEmail(supplier.get().getEmail())
+                .message(buildMessageFromOrderProductList(orderEntity.getProducts()))
+                .orderCode(orderEntity.getCode())
+                .user_name(orderEntity.getSenderUser())
+                .build());
+
+        if(emailSenderResponse.getStatus() == "OK"){
             Optional<OrderEntity> order = orderRepository.findById(orderSaved.getOrderId());
             if(order.isPresent()){
                 order.get().setOrderStatus(OrderStatus.INVIATO);
                 return order.get();
             }
-        } catch (EmailSenderException e) {
+        }else{
             Optional<OrderEntity> order = orderRepository.findById(orderSaved.getOrderId());
             if(order.isPresent()){
                 order.get().setOrderStatus(OrderStatus.NON_INVIATO);
-                order.get().setErrorStatus(e.toString());
+                order.get().setErrorMessage(emailSenderResponse.getMessage());
                 return order.get();
             }
         }
-
-
         return null;
     }
 
@@ -130,6 +157,51 @@ public class OrderService {
     private String buildMessageFromOrderProductList(List<R_OrderProduct> products) {
 
         //TODO fare l'ordine dalla lista prodotti
-        return "sadasdsa";
+        return "creare l'ordine aslidhsalfkjshdlfkajshdfl asdukhalsdkvbjhadflvbjhadflvk adlfkjvbadlfhk bad fhladlfj vhadflj hadf hj adfvljad fhlj fvhadlfj h";
+    }
+
+    public List<OrderEntity> findOrderByBranch(Branch branch) {
+        List<OrderEntity> orderEntities = new ArrayList<>();
+
+        logger.info("Find order by branch " + branch.toString());
+
+        Optional<List<BranchOrderStorageSupplier>> ordersByBranch = branchOrderRepository.findOrdersByBranch(branch);
+        if(ordersByBranch.isPresent()){
+            for(BranchOrderStorageSupplier branchOrderStorageSupplier : ordersByBranch.get()){
+                Optional<List<OrderProduct>> allProductByOrder = orderProductRepository.findAllProductByOrder(branchOrderStorageSupplier.getOrderEntity());
+
+                branchOrderStorageSupplier.getOrderEntity().setProducts(buildROrderProduct(allProductByOrder.get()));
+                branchOrderStorageSupplier.getOrderEntity().setStorageId(branchOrderStorageSupplier.getStorage().getStorageId());
+                branchOrderStorageSupplier.getOrderEntity().setSupplierId(branchOrderStorageSupplier.getSupplier().getSupplierId());
+                orderEntities.add(branchOrderStorageSupplier.getOrderEntity());
+            }
+            return orderEntities;
+        }else{
+            return orderEntities;
+        }
+    }
+
+    private List<R_OrderProduct> buildROrderProduct(List<OrderProduct> orderProducts) {
+        List<R_OrderProduct> r_orderProducts = new ArrayList<>();
+
+        for(OrderProduct orderProduct : orderProducts){
+            r_orderProducts.add(R_OrderProduct.buildR_OrderProduct(orderProduct));
+        }
+        return r_orderProducts;
+    }
+
+    @Transactional
+    public void updateOrder(OrderEntity orderEntity) throws CustomException {
+        Optional<OrderEntity> orderById = orderRepository.findById(orderEntity.getOrderId());
+        if(orderById.isPresent()){
+
+            orderById.get().setOrderStatus(orderEntity.getOrderStatus());
+
+
+        }else{
+            throw new CustomException("Error - Nessun ordine trovato per l'id [" + orderEntity.getOrderId() + "]");
+        }
+
+
     }
 }

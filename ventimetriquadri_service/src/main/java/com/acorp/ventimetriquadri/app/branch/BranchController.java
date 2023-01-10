@@ -23,10 +23,10 @@ public class BranchController {
     }
 
     @PostMapping(path = "/save")
-    public void save(Branch branch) { branchService.addNewBranch(branch); }
+    public void save(@RequestBody Branch branch) { branchService.addNewBranch(branch); }
 
     @DeleteMapping(path = "/delete")
-    public void delete(Branch branch){
+    public void delete(@RequestBody Branch branch){
         branchService.delete(branch);
     }
 
@@ -35,9 +35,8 @@ public class BranchController {
         branchService.createBranchSupplierRelation(branchId, supplierId);
     }
 
-
     @PutMapping(path = "/update")
-    public void update(Branch branch){
+    public void update(@RequestBody Branch branch){
         branchService.update(branch);
     }
 
@@ -52,7 +51,7 @@ public class BranchController {
     }
 
     @GetMapping(path = "/linkbranchanduser")
-    public void linkBranchAndUser(long branchId, long userId, String userPriviledge) {
+    public void linkBranchAndUser(@RequestParam long branchId, @RequestParam long userId, @RequestParam String userPriviledge) {
         branchService.linkUserBranchId(branchId, userId, userPriviledge);
     }
 

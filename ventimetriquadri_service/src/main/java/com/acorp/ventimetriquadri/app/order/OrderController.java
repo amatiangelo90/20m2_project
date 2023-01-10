@@ -18,4 +18,11 @@ public class OrderController {
     public OrderEntity sendOrder(@RequestBody OrderEntity orderEntity) throws CustomException {
         return orderService.sendOrder(orderEntity, orderEntity.getProducts());
     }
+
+    @PutMapping(path = "/update")
+    public void updateOrder(@RequestBody OrderEntity orderEntity) throws CustomException {
+        orderService.updateOrder(orderEntity);
+    }
+
+
 }

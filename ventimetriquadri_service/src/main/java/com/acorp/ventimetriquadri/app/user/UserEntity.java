@@ -50,6 +50,10 @@ public class UserEntity {
             nullable = false
     )
     private String phone = "";
+    private String photo = "";
+
+    @Enumerated
+    private UserType userType;
 
     @Transient
     List<Branch> branchList = new ArrayList<>();
